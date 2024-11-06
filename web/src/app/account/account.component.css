@@ -1,0 +1,17 @@
+.modal {
+  background-color: #6D435A;
+  color: #EF5D60;
+}
+
+.modal-content {
+  background-color: #340068
+}
+
+.btn {
+  background-color: #B1EDE8
+}
+
+.btn:hover {
+  background-color: #dacb5f;
+  color: #611e1e;
+}

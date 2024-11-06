@@ -1,0 +1,6 @@
+web/node_modules/
+web/build/
+
+api/target
+.DS_Store
+*.log
