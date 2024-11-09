@@ -4,3 +4,4 @@ web/build/
 api/target
 .DS_Store
 *.log
+./.idea
