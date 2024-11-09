@@ -1,24 +1,23 @@
 import {Injectable} from '@angular/core';
 import {HttpClient, HttpParams} from '@angular/common/http';
 import {Observable} from 'rxjs';
-import {Account} from './account';
+import {Summoner} from './summoner';
 import {environment} from '../../environment/environment';
 
 @Injectable({
   providedIn: 'root'
 })
-export class AccountService {
+export class SummonerService {
   private apiServerUrl = environment.apiServerUrl;
 
   constructor(private http: HttpClient) {
   }
 
 
-  public getAccount(username: string, tag: string): Observable<Account> {
+  public getSummoner(puuid: string): Observable<Summoner> {
     const params = new HttpParams()
-      .set('username', username)
-      .set('tag', tag);
+      .set('puuid', puuid)
 
-    return this.http.get<Account>(`${this.apiServerUrl}/accounts`, {params})
+    return this.http.get<Summoner>(`${this.apiServerUrl}/summoners`, {params})
   }
 }

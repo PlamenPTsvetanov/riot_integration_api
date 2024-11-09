@@ -1,6 +1,7 @@
-import {Component, OnInit} from '@angular/core';
+import {Component} from '@angular/core';
 import {Account} from './account';
 import {AccountService} from './account.service';
+import {Router} from '@angular/router';
 
 @Component({
   selector: 'app-root',
@@ -14,13 +15,16 @@ export class AccountComponent {
   public account: Account;
 
 
-  constructor(private accountService: AccountService) {
+  constructor(private accountService: AccountService, private router: Router) {
   }
 
-  public getAccount(username:string, tag:string): void {
+  public getAccount(username: string, tag: string): void {
     this.accountService.getAccount(username, tag).subscribe(
       (response: Account) => {
         this.account = response;
+        if (this.account) {
+          this.router.navigate(['/summoner']);
+        }
       }
     );
   }

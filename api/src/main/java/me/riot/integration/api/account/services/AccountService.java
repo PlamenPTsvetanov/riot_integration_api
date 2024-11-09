@@ -36,25 +36,4 @@ public class AccountService extends BaseService<AccountDTO> {
         }
         return response;
     }
-
-    /*public AccountDTO getAccountInformation(String puuid) {
-        AccountDTO response;
-        try {
-            StringBuilder modifiedRequest =
-                    new StringBuilder(_apiUrl)
-                            .append(_BASE_END_POINT)
-                            .append(CLASS_END_POINT)
-                            .append(BY_RIOT_ID_EP)
-                            .append(inRestBean.getGameName())
-                            .append("/")
-                            .append(inRestBean.getTagLine());
-
-
-            String retrievedFromApi = super.sendRequest(modifiedRequest.toString(), HTTPMethod.GET);
-            response = _objectMapper.readValue(retrievedFromApi, AccountDTO.class);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-        return response;
-    }*/
 }

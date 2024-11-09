@@ -19,7 +19,7 @@ public class AccountController {
     }
 
 
-    @GetMapping(path = "/get")
+    @GetMapping(path = "")
     public AccountDTO getAccount(
             @RequestParam("username") String gameName,
             @RequestParam("tag") String tagLine) {
