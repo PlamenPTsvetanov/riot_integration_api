@@ -1,17 +1,30 @@
-.modal {
-  background-color: #6D435A;
-  color: #EF5D60;
+
+.example-form {
+
+  min-width: 50px;
+  max-width: 300px;
+  margin-left: auto;
+  margin-right: auto;
+  margin-top: 50px;
+  color: white;
+  text-align: center;
 }
 
-.modal-content {
-  background-color: #340068
+.example-full-width {
+  width: 100%;
 }
 
-.btn {
-  background-color: #B1EDE8
+
+.div {
+  margin: 50px;
 }
 
-.btn:hover {
-  background-color: #dacb5f;
-  color: #611e1e;
+
+.mat-label {
+  text-align: center;
+}
+
+
+.div-button {
+  margin-top: 10px;
 }

@@ -1,0 +1,20 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+
+.logo {
+  font-size: 50px;
+  color: aliceblue;
+  text-shadow: #7a6b25 3px 2px 1px;
+  text-align: center;
+  font-family: Arial, Helvetica, sans-serif;
+  border: #f8e037 solid 1px;
+  margin-top: 5%;
+  margin-left: 35%;
+  margin-right: 35%;
+  border-radius: 40px;
+  box-shadow: #7a6b25 0px 4px 0px;
+}
