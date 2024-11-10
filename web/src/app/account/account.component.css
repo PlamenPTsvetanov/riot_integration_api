@@ -1,8 +1,6 @@
-
-.example-form {
-
+.account-form {
   min-width: 50px;
-  max-width: 300px;
+  max-width: 500px;
   margin-left: auto;
   margin-right: auto;
   margin-top: 50px;
@@ -10,8 +8,9 @@
   text-align: center;
 }
 
-.example-full-width {
+.full-width {
   width: 100%;
+  flex: 1
 }
 
 
@@ -27,4 +26,10 @@
 
 .div-button {
   margin-top: 10px;
+}
+
+.form-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 50px;
 }

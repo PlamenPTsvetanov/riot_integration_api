@@ -1,6 +1,6 @@
-import {Injectable} from '@angular/core';
+import {Injectable, signal} from '@angular/core';
 import {HttpClient, HttpParams} from '@angular/common/http';
-import {Observable} from 'rxjs';
+import {catchError, Observable} from 'rxjs';
 import {Account} from './account';
 import {environment} from '../../environment/environment';
 
@@ -8,6 +8,10 @@ import {environment} from '../../environment/environment';
   providedIn: 'root'
 })
 export class AccountService {
+  // @ts-ignore
+  private account = signal<Account>(null);
+  loadedAccount = this.account;
+
   private apiServerUrl = environment.apiServerUrl;
 
   constructor(private http: HttpClient) {
@@ -19,6 +23,7 @@ export class AccountService {
       .set('username', username)
       .set('tag', tag);
 
-    return this.http.get<Account>(`${this.apiServerUrl}/accounts`, {params})
+    return this.http
+      .get<Account>(`${this.apiServerUrl}/accounts`, {params});
   }
 }

@@ -1,6 +1,6 @@
-<form class="example-form" [formGroup]="form">
-  <p>
-    <mat-form-field class="example-full-width">
+<form class="account-form" [formGroup]="form">
+  <div class="form-row">
+    <mat-form-field class="full-width">
       <mat-label>In-game name</mat-label>
       <input type="inGameName" matInput [formControl]="form.controls.inGameName"
              [errorStateMatcher]="matcher"
@@ -17,10 +17,16 @@
         <mat-error>Tag is <strong>required</strong></mat-error>
       }
     </mat-form-field>
-  </p>
+  </div>
   <div class="div-button">
     <button mat-fab extended (click)="getAccount()">
       Search
     </button>
   </div>
 </form>
+
+@if (accountService.loadedAccount()) {
+  <div>
+    <app-summoner [account]="accountService.loadedAccount()"/>
+  </div>
+}

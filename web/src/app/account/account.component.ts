@@ -1,4 +1,4 @@
-import {Component, Output} from '@angular/core';
+import {Component, inject} from '@angular/core';
 import {Account} from './account';
 import {AccountService} from './account.service';
 import {FormControl, FormGroup, FormGroupDirective, NgForm, ReactiveFormsModule, Validators} from '@angular/forms';
@@ -7,13 +7,14 @@ import {MatFormFieldModule} from '@angular/material/form-field';
 import {ErrorStateMatcher} from '@angular/material/core';
 import {MatIconModule} from '@angular/material/icon';
 import {MatButtonModule} from '@angular/material/button';
+import {SummonerComponent} from '../summoner/summoner.component';
 
 @Component({
   selector: 'app-account',
   templateUrl: './account.component.html',
   styleUrl: './account.component.css',
   standalone: true,
-  imports: [MatFormFieldModule, MatInputModule, ReactiveFormsModule, MatIconModule, MatButtonModule],
+  imports: [MatFormFieldModule, MatInputModule, ReactiveFormsModule, MatIconModule, MatButtonModule, SummonerComponent],
 })
 export class AccountComponent {
   form = new FormGroup(
@@ -25,21 +26,14 @@ export class AccountComponent {
 
   matcher = new AccountErrorStateMatcher();
 
-  @Output() account: Account;
-
-
-  constructor(private accountService: AccountService) {
-  }
+  accountService = inject(AccountService)
 
   public getAccount(): void {
     const inGameName = this.form.value.inGameName;
     const tag = this.form.value.tag;
-
-    console.log(inGameName, tag);
     this.accountService.getAccount(inGameName!, tag!).subscribe(
       (response: Account) => {
-        this.account = response;
-        console.log(response);
+        this.accountService.loadedAccount.set(response);
       }
     );
   }
