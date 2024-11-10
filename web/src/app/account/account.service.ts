@@ -1,16 +1,15 @@
-import {Injectable, signal} from '@angular/core';
+import {Injectable, signal, WritableSignal} from '@angular/core';
 import {HttpClient, HttpParams} from '@angular/common/http';
 import {catchError, Observable} from 'rxjs';
 import {Account} from './account';
 import {environment} from '../../environment/environment';
+import {Summoner} from '../summoner/summoner';
 
 @Injectable({
   providedIn: 'root'
 })
 export class AccountService {
-  // @ts-ignore
-  private account = signal<Account>(null);
-  loadedAccount = this.account;
+  private _account = signal<Account | null>(null);
 
   private apiServerUrl = environment.apiServerUrl;
 
@@ -25,5 +24,9 @@ export class AccountService {
 
     return this.http
       .get<Account>(`${this.apiServerUrl}/accounts`, {params});
+  }
+
+  get account(): WritableSignal<Account | null> {
+    return this._account;
   }
 }

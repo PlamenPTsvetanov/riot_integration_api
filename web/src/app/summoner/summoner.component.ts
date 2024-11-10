@@ -1,8 +1,6 @@
-import {Component, Input, OnDestroy} from '@angular/core';
-import {SummonerService} from './summoner.service';
+import {Component, DestroyRef, inject, Input, OnInit} from '@angular/core';
 import {Account} from '../account/account';
-import {Summoner} from './summoner';
-import {Subscription} from 'rxjs';
+import {SummonerService} from './summoner.service';
 
 @Component({
   selector: 'app-summoner',
@@ -10,27 +8,24 @@ import {Subscription} from 'rxjs';
   styleUrl: './summoner.component.css',
   standalone: true
 })
-export class SummonerComponent implements OnDestroy {
+export class SummonerComponent implements OnInit {
+  private destroyRef = inject(DestroyRef);
 
   @Input() account: Account;
 
-  summoner: Summoner;
-  private sub: Subscription;
+  summonerService = inject(SummonerService);
 
-  constructor(private summonerService: SummonerService) {
-  }
+  ngOnInit(): void {
+    const sub = this.summonerService.getSummoner(this.account.puuid).subscribe({
+      next: (value) => {
+        this.summonerService.summoner.set(value);
+      }
+    });
 
-  getSummoner() {
-    this.sub = this.summonerService.getSummoner(this.account.puuid).subscribe({
-      next: (summoner) => {
-        console.log(summoner)
-        this.summoner = summoner;
-      },
-      error: (error) => console.log(error)
+    this.destroyRef.onDestroy(() => {
+      sub.unsubscribe();
     });
   }
 
-  ngOnDestroy() {
-    this.sub.unsubscribe();
-  }
+
 }

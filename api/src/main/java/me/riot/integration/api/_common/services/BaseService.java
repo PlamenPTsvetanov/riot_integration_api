@@ -21,6 +21,8 @@ public class BaseService<DTO extends BaseDTO> {
     protected static final String _BASE_END_POINT = "riot/";
     @Value("${api.integration.url}")
     protected String _apiUrl;
+    @Value("${api.integration.url_eun1}")
+    protected String _apiUrlEun1;
     @Value("${api.integration.key}")
     protected String _apiKey;
 

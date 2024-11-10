@@ -25,8 +25,8 @@
   </div>
 </form>
 
-@if (accountService.loadedAccount()) {
+@if (accountService.account()) {
   <div>
-    <app-summoner [account]="accountService.loadedAccount()"/>
+    <app-summoner [account]="accountService.account()!"/>
   </div>
 }

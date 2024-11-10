@@ -1,4 +1,4 @@
-import {Component, inject} from '@angular/core';
+import {Component, DestroyRef, inject} from '@angular/core';
 import {Account} from './account';
 import {AccountService} from './account.service';
 import {FormControl, FormGroup, FormGroupDirective, NgForm, ReactiveFormsModule, Validators} from '@angular/forms';
@@ -17,6 +17,8 @@ import {SummonerComponent} from '../summoner/summoner.component';
   imports: [MatFormFieldModule, MatInputModule, ReactiveFormsModule, MatIconModule, MatButtonModule, SummonerComponent],
 })
 export class AccountComponent {
+  private destroyRef = inject(DestroyRef);
+
   form = new FormGroup(
     {
       inGameName: new FormControl<string>('', [Validators.required]),
@@ -29,13 +31,20 @@ export class AccountComponent {
   accountService = inject(AccountService)
 
   public getAccount(): void {
+    this.accountService.account.set(null);
     const inGameName = this.form.value.inGameName;
     const tag = this.form.value.tag;
-    this.accountService.getAccount(inGameName!, tag!).subscribe(
-      (response: Account) => {
-        this.accountService.loadedAccount.set(response);
-      }
-    );
+    const sub = this.accountService.getAccount(inGameName!, tag!)
+      .subscribe({
+          next: (response: Account) => {
+            this.accountService.account.set(response);
+          }
+        }
+      );
+
+    this.destroyRef.onDestroy(() => {
+      sub.unsubscribe();
+    });
   }
 }
 

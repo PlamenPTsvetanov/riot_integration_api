@@ -1,3 +1,5 @@
 <div>
-  {{ account.puuid }}
+  @if (summoner()) {
+    {{ summoner()!.summonerLevel }}
+  }
 </div>
