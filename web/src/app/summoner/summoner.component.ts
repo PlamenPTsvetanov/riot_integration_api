@@ -3,12 +3,14 @@ import {Account} from '../account/account';
 import {SummonerService} from './summoner.service';
 import {Subscription} from 'rxjs';
 import {DomSanitizer} from '@angular/platform-browser';
+import {SummonerRankedComponent} from '../summoner-ranked/summoner-ranked.component';
 
 @Component({
   selector: 'app-summoner',
   templateUrl: './summoner.component.html',
   styleUrl: './summoner.component.css',
-  standalone: true
+  standalone: true,
+  imports: [SummonerRankedComponent]
 })
 export class SummonerComponent implements OnInit {
   private destroyRef = inject(DestroyRef);

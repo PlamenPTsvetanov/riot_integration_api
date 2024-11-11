@@ -1,18 +1,22 @@
 package me.riot.integration.api.account.services;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import me.riot.integration.api._common.services.BaseService;
 import me.riot.integration.api._common.utils.HTTPMethod;
 import me.riot.integration.api.account.dto.SummonerDTO;
+import me.riot.integration.api.account.dto.SummonerRankedInfoDTO;
 import org.springframework.stereotype.Service;
 
 import java.math.BigInteger;
-import java.util.Base64;
+import java.util.List;
 
 @Service
 public class SummonerService extends BaseService<SummonerDTO> {
 
-    private static final String CLASS_END_POINT = "summoner/v4/";
+    private static final String SUMMONER_V_4 = "summoner/v4/";
+    private static final String LEAGUE_V_4 = "league/v4/";
     private static final String SUMMONERS_BY_PUUID = "summoners/by-puuid/";
+    private static final String ENTRIES = "entries/by-summoner/";
 
     private static final String ICON_END_POINT = "img/profileicon/";
     private static final String ICON_EXTENSION = ".png";
@@ -22,7 +26,7 @@ public class SummonerService extends BaseService<SummonerDTO> {
         try {
             StringBuilder modifiedRequest =
                     new StringBuilder(_apiUrlEun1)
-                            .append(CLASS_END_POINT)
+                            .append(SUMMONER_V_4)
                             .append(SUMMONERS_BY_PUUID)
                             .append(accountPuuid);
 
@@ -52,5 +56,25 @@ public class SummonerService extends BaseService<SummonerDTO> {
         }
 
         return icon;
+    }
+
+
+    public List<SummonerRankedInfoDTO> getSummonerRankedInformation(String summonerId) {
+        List<SummonerRankedInfoDTO> dto = null;
+        try {
+            StringBuilder modifiedRequest =
+                    new StringBuilder(_apiUrlEun1)
+                            .append(LEAGUE_V_4)
+                            .append(ENTRIES)
+                            .append(summonerId);
+
+
+            String content = super.sendRequest(modifiedRequest.toString(), HTTPMethod.GET);
+            dto = _objectMapper.readValue(content, new TypeReference<List<SummonerRankedInfoDTO>>() {
+            });
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+        return dto;
     }
 }

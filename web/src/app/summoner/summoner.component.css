@@ -2,37 +2,44 @@ img {
   max-width: 50px;
   max-height: 50px;
 }
-
-.profile-box {
+.items{
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   align-items: center;
   background-color: #2d2d2d;
   padding: 15px;
   border-radius: 10px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
   color: #fff;
-  width: 200px;
+  max-width: 300px;
+  max-height: 200px;
+  gap: 20px;
 }
 
-.profile-icon {
-  width: 80px;
-  height: 80px;
-  border-radius: 50%;
-  margin-bottom: 10px;
-  border: 2px solid #fff;
+.profile-box {
+  margin-left: 2%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 .profile-info {
+  display: flex;
+  flex-direction: column;
   text-align: center;
+  align-items: center;
+
 }
 
 .game-name {
   font-size: 18px;
   font-weight: bold;
+  margin-top: 5px;
 }
 
 .game-tag {
   font-size: 14px;
-  color: rgba(255, 255, 255, 0.7); /* Light color for the tag */
+  color: rgba(255, 255, 255, 0.7);
 }
+
+.app-summoner-

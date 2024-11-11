@@ -1,0 +1,10 @@
+@if (srService.summonerRankedInfo()) {
+  <div class="container">
+    <img [src]="imagePath" alt="Rank" class="image">
+    <div class="text-container">
+      <p>{{srService.summonerRankedInfo()![0].tier}}</p>
+      <p>{{srService.summonerRankedInfo()![0].rank}}</p>
+    </div>
+  </div>
+}
+
