@@ -5,6 +5,13 @@
       <p>{{srService.summonerRankedInfo()![0].tier}}</p>
       <p>{{srService.summonerRankedInfo()![0].rank}}</p>
     </div>
+    <div class="text-league-points">
+      {{srService.summonerRankedInfo()![0].leaguePoints}} LP
+    </div>
+    <div class="text-wins-losses">
+      {{srService.summonerRankedInfo()![0].wins}} W -
+      {{srService.summonerRankedInfo()![0].losses}} L ({{srService.summonerRankedInfo()![0].winrate}}%)
+    </div>
   </div>
 }
 

@@ -1,4 +1,7 @@
-export interface SummonerRanked {
+import * as string_decoder from 'node:string_decoder';
+import {stringify} from 'node:querystring';
+
+export class SummonerRanked {
   leagueId: String;
   queueType: String;
   tier: String;
@@ -11,5 +14,6 @@ export interface SummonerRanked {
   inactive: boolean;
   freshBlood: boolean;
   hotstreak: boolean;
-
+  winrate: string;
 }
+
