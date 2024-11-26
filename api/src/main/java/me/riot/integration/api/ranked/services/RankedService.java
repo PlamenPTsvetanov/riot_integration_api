@@ -41,7 +41,7 @@ public class RankedService extends BaseService<AccountDTO> {
     }
 
     //Rp5NE2Jlwx9v8udkxFL1H52_bY20ULWlY1YfOxg7M2l5z6D8mS5I2YD5POTiGuMcMXurkNvyE_7rCw
-    public List<PlayerChampionStats> getChampionsWithWins(String matchId) {
+    public List<PlayerChampionStats> getChampionsWithWins() {
         // Champion id -> list of stats
         List<PlayerChampionStats> champStats = new ArrayList<>();
         try {

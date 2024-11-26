@@ -26,10 +26,9 @@ public class RankedController {
         return service.getLastMatches(puuid);
     }
 
-    @GetMapping(path = "/match")
-    public List<PlayerChampionStats> getSingleMatch(
-            @RequestParam("id") String id) {
-        return service.getChampionsWithWins(id);
+    @GetMapping(path = "/champion-stats")
+    public List<PlayerChampionStats> getChampionStats() {
+        return service.getChampionsWithWins();
     }
 }
 
