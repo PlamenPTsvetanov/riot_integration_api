@@ -5,6 +5,6 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class MatchMetaData {
+public class SimpleMatchInfoHolder {
     private SimpleMatchInfoBean info;
 }

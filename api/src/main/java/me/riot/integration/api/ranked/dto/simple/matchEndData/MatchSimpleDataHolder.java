@@ -3,6 +3,8 @@ package me.riot.integration.api.ranked.dto.simple.matchEndData;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.Objects;
+
 @Getter
 @Setter
 public class MatchSimpleDataHolder {
@@ -22,5 +24,10 @@ public class MatchSimpleDataHolder {
         }
 
         return this.champPlayedId.equals(o1.champPlayedId);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(champPlayedId);
     }
 }

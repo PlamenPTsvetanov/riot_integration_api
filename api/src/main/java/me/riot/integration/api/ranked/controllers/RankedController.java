@@ -8,7 +8,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
-import java.util.Set;
 
 @RestController
 @RequestMapping("/ranked")
@@ -28,7 +27,7 @@ public class RankedController {
     }
 
     @GetMapping(path = "/match")
-    public Set<PlayerChampionStats> getSingleMatch(
+    public List<PlayerChampionStats> getSingleMatch(
             @RequestParam("id") String id) {
         return service.getChampionsWithWins(id);
     }

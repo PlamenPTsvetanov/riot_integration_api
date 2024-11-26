@@ -9,7 +9,7 @@ import java.util.List;
 @Getter
 @Setter
 public class SimpleMatchInfoBean {
-    List<ParticipantRecord> participants;
+    List<ParticipantBean> participants;
     Long gameDuration;
     Long queueId;
 

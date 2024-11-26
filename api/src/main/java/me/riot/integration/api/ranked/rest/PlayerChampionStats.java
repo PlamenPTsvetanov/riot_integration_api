@@ -6,8 +6,13 @@ import lombok.Setter;
 @Getter
 @Setter
 public class PlayerChampionStats {
-    private Double winPercentage;
-    private Double minionsPer10;
+    private String winPercentage;
+    private String avgMinions;
+    private String minionsPer10;
     private String championName;
     private byte[] championImage;
+    private Integer gamesPlayed;
+    private String kills;
+    private String deaths;
+    private String assists;
 }
