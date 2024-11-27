@@ -1,6 +1,3 @@
-import * as string_decoder from 'node:string_decoder';
-import {stringify} from 'node:querystring';
-
 export class SummonerRanked {
   leagueId: String;
   queueType: String;

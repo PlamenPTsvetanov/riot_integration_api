@@ -1,4 +1,4 @@
-import {AfterViewChecked, ChangeDetectorRef, Component, DestroyRef, inject} from '@angular/core';
+import {Component, DestroyRef, inject} from '@angular/core';
 import {Account} from './account';
 import {AccountService} from './account.service';
 import {FormControl, FormGroup, FormGroupDirective, NgForm, ReactiveFormsModule, Validators} from '@angular/forms';
@@ -8,16 +8,16 @@ import {ErrorStateMatcher} from '@angular/material/core';
 import {MatIconModule} from '@angular/material/icon';
 import {MatButtonModule} from '@angular/material/button';
 import {SummonerComponent} from '../summoner/summoner.component';
-import {LastPlayedChampionsComponent} from '../last-played-champions/last-played-champions.component';
 
 @Component({
   selector: 'app-account',
   templateUrl: './account.component.html',
   styleUrl: './account.component.css',
   standalone: true,
-  imports: [MatFormFieldModule, MatInputModule, ReactiveFormsModule, MatIconModule, MatButtonModule, SummonerComponent, LastPlayedChampionsComponent],
+  imports: [MatFormFieldModule, MatInputModule, ReactiveFormsModule, MatIconModule, MatButtonModule, SummonerComponent],
 })
 export class AccountComponent {
+
   private destroyRef = inject(DestroyRef);
 
   form = new FormGroup(
@@ -29,8 +29,6 @@ export class AccountComponent {
   matcher = new AccountErrorStateMatcher();
 
   accountService = inject(AccountService);
-  showChamps = false;
-
 
   public getAccount(): void {
     this.accountService.account.set(null);
@@ -43,14 +41,9 @@ export class AccountComponent {
           }
         }
       );
-
     this.destroyRef.onDestroy(() => {
       sub.unsubscribe();
     });
-  }
-
-  setShowChamps() {
-    this.showChamps = true;
   }
 }
 

@@ -1,34 +1,22 @@
-import {
-  AfterViewInit,
-  Component,
-  DestroyRef,
-  EventEmitter,
-  inject,
-  Input,
-  OnInit,
-  Output,
-  Sanitizer,
-  signal
-} from '@angular/core';
+import {Component, DestroyRef, inject, Input, OnInit} from '@angular/core';
 import {Account} from '../account/account';
 import {SummonerService} from './summoner.service';
 import {Subscription} from 'rxjs';
 import {DomSanitizer} from '@angular/platform-browser';
 import {SummonerRankedComponent} from '../summoner-ranked/summoner-ranked.component';
+import {LastPlayedChampionsComponent} from '../last-played-champions/last-played-champions.component';
 
 @Component({
   selector: 'app-summoner',
   templateUrl: './summoner.component.html',
   styleUrl: './summoner.component.css',
   standalone: true,
-  imports: [SummonerRankedComponent]
+  imports: [SummonerRankedComponent, LastPlayedChampionsComponent]
 })
 export class SummonerComponent implements OnInit {
   private destroyRef = inject(DestroyRef);
 
   @Input() account: Account;
-  @Output() accSignal= signal<boolean>(false);
-
   summonerService = inject(SummonerService);
   sanitizer = inject(DomSanitizer);
   image: any;
@@ -46,7 +34,6 @@ export class SummonerComponent implements OnInit {
         });
       }
     });
-    this.accSignal.set(false);
     this.destroyRef.onDestroy(() => {
       accountDataSub.unsubscribe();
       iconSub.unsubscribe();

@@ -15,4 +15,5 @@ public class PlayerChampionStats {
     private String kills;
     private String deaths;
     private String assists;
+    private String kda;
 }

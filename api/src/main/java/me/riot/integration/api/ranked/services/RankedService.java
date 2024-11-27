@@ -5,7 +5,6 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import me.riot.integration.api._common.services.BaseService;
 import me.riot.integration.api._common.utils.HTTPMethod;
 import me.riot.integration.api.account.dto.AccountDTO;
-import me.riot.integration.api.ranked.dto.simple.matchEndData.MatchSimpleDataHolder;
 import me.riot.integration.api.ranked.dto.simple.matchEndData.ParticipantBean;
 import me.riot.integration.api.ranked.dto.simple.matchEndData.SimpleMatchInfoHolder;
 import me.riot.integration.api.ranked.rest.PlayerChampionStats;
@@ -47,15 +46,12 @@ public class RankedService extends BaseService<AccountDTO> {
         try {
             List<String> lastMatches = this.getLastMatches(puuid);
 
-            Map<MatchSimpleDataHolder, Set<ParticipantBean>> endData = new HashMap<>();
+            Map<Long, Set<ParticipantBean>> endData = new HashMap<>();
 
             getEndDataFromMatches(puuid, lastMatches, endData);
 
-            for (MatchSimpleDataHolder holder : endData.keySet()) {
-                Set<ParticipantBean> data = endData.get(holder);
-                PlayerChampionStats stats = getPlayerChampionStats(holder, data);
-
-                champStats.add(stats);
+            for (Set<ParticipantBean> data : endData.values()) {
+                champStats.add(getPlayerChampionStats(data));
             }
         } catch (Exception e) {
             throw new RuntimeException(e);
@@ -64,7 +60,7 @@ public class RankedService extends BaseService<AccountDTO> {
         return champStats;
     }
 
-    private void getEndDataFromMatches(String puuid, List<String> lastMatches, Map<MatchSimpleDataHolder, Set<ParticipantBean>> endData) throws JsonProcessingException {
+    private void getEndDataFromMatches(String puuid, List<String> lastMatches, Map<Long, Set<ParticipantBean>> endData) throws JsonProcessingException {
         for (String match : lastMatches) {
             StringBuilder modifiedRequest =
                     new StringBuilder(_apiUrl)
@@ -89,24 +85,24 @@ public class RankedService extends BaseService<AccountDTO> {
             // We know we have only one participant unfiltered, so we proceed without fear of NPE
             ParticipantBean currData = dto.getInfo().getParticipants().get(0);
 
+            currData.setGameDuration(dto.getInfo().getGameDuration());
+
             // Adding simple match data with an empty set
             Long champId = currData.getChampionId();
-            MatchSimpleDataHolder msdh = new MatchSimpleDataHolder();
-            msdh.setChampPlayedId(champId);
-            msdh.setDuration(dto.getInfo().getGameDuration());
 
-            endData.putIfAbsent(msdh, new HashSet<>());
-            endData.get(msdh).add(currData);
+            endData.putIfAbsent(champId, new HashSet<>());
+            endData.get(champId).add(currData);
         }
     }
 
-    private PlayerChampionStats getPlayerChampionStats(MatchSimpleDataHolder holder, Set<ParticipantBean> data) {
+    private PlayerChampionStats getPlayerChampionStats(Set<ParticipantBean> data) {
         int gamesPlayed = data.size();
         double winCounter = 0.0;
         double minionCounter = 0.0;
         double avgKills = 0.0;
         double avgAssists = 0.0;
         double avgDeaths = 0.0;
+        double avgDuration = 0.0;
         String championName = null;
         byte[] championImageBytes = null;
 
@@ -117,6 +113,7 @@ public class RankedService extends BaseService<AccountDTO> {
             avgKills += datum.getKills();
             avgAssists += datum.getAssists();
             avgDeaths += datum.getDeaths();
+            avgDuration += datum.getGameDuration();
             if (championName == null) {
                 championName = datum.getChampionName();
                 championImageBytes = getChampionImageBytes(championName);
@@ -124,8 +121,8 @@ public class RankedService extends BaseService<AccountDTO> {
         }
 
         PlayerChampionStats stats = new PlayerChampionStats();
-        stats.setMinionsPer10(String.format("%.2f", (minionCounter / (holder.getDuration() / 60.0)) / gamesPlayed)); // seconds to minute
-        stats.setWinPercentage(String.format("%.2f", winCounter / gamesPlayed));
+        stats.setMinionsPer10(String.format("%.2f", (minionCounter / ((avgDuration / gamesPlayed) / 60.0)) / gamesPlayed)); // seconds to minute
+        stats.setWinPercentage(String.format("%.0f", winCounter / gamesPlayed));
         stats.setChampionName(championName);
         stats.setGamesPlayed(data.size());
         stats.setAssists(String.format("%.1f", avgAssists / gamesPlayed));
@@ -133,6 +130,7 @@ public class RankedService extends BaseService<AccountDTO> {
         stats.setKills(String.format("%.1f", avgKills / gamesPlayed));
         stats.setAvgMinions(String.format("%.1f", minionCounter / gamesPlayed));
         stats.setChampionImage(championImageBytes);
+        stats.setKda(String.format("%.1f", ((avgKills + avgAssists) / avgDeaths) / gamesPlayed));
         return stats;
     }
 

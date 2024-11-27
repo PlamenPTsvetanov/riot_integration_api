@@ -10,5 +10,6 @@
       </div>
       <app-summoner-ranked [summonerId]="summonerService.summoner()?.id!"/>
     </div>
+    <app-last-played-champions [puuid]="account!.puuid"></app-last-played-champions>
   }
 </div>

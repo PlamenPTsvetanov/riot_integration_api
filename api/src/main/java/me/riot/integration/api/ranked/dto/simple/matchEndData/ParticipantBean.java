@@ -18,4 +18,5 @@ public class ParticipantBean {
     private Long kills;
     private Long deaths;
     private Long assists;
+    private Long gameDuration;
 }

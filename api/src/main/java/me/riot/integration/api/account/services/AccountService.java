@@ -6,6 +6,8 @@ import me.riot.integration.api.account.dto.AccountDTO;
 import me.riot.integration.api.account.rest.in.AccountSimpleInRestBean;
 import org.springframework.stereotype.Service;
 
+import java.net.URLEncoder;
+
 @Service
 public class AccountService extends BaseService<AccountDTO> {
     private static final String CLASS_END_POINT = "account/v1/";
@@ -24,7 +26,7 @@ public class AccountService extends BaseService<AccountDTO> {
                             .append(_BASE_END_POINT)
                             .append(CLASS_END_POINT)
                             .append(BY_RIOT_ID_EP)
-                            .append(inRestBean.getGameName())
+                            .append(URLEncoder.encode(inRestBean.getGameName()))
                             .append("/")
                             .append(inRestBean.getTagLine());
 
