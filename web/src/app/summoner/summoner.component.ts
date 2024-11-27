@@ -1,4 +1,15 @@
-import {Component, DestroyRef, inject, Input, OnInit, Sanitizer} from '@angular/core';
+import {
+  AfterViewInit,
+  Component,
+  DestroyRef,
+  EventEmitter,
+  inject,
+  Input,
+  OnInit,
+  Output,
+  Sanitizer,
+  signal
+} from '@angular/core';
 import {Account} from '../account/account';
 import {SummonerService} from './summoner.service';
 import {Subscription} from 'rxjs';
@@ -16,6 +27,7 @@ export class SummonerComponent implements OnInit {
   private destroyRef = inject(DestroyRef);
 
   @Input() account: Account;
+  @Output() accSignal= signal<boolean>(false);
 
   summonerService = inject(SummonerService);
   sanitizer = inject(DomSanitizer);
@@ -23,7 +35,7 @@ export class SummonerComponent implements OnInit {
 
   ngOnInit(): void {
     let iconSub: Subscription;
-    const accountDataSub = this.summonerService.getSummoner(this.account.puuid).subscribe({
+    const accountDataSub = this.summonerService.getSummoner(this.account!.puuid).subscribe({
       next: (value) => {
         this.summonerService._summoner.set(value);
         iconSub = this.summonerService.getIconBytes().subscribe({
@@ -34,6 +46,7 @@ export class SummonerComponent implements OnInit {
         });
       }
     });
+    this.accSignal.set(false);
     this.destroyRef.onDestroy(() => {
       accountDataSub.unsubscribe();
       iconSub.unsubscribe();

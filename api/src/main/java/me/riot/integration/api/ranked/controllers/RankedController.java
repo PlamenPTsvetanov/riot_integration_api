@@ -27,8 +27,8 @@ public class RankedController {
     }
 
     @GetMapping(path = "/champion-stats")
-    public List<PlayerChampionStats> getChampionStats() {
-        return service.getChampionsWithWins();
+    public List<PlayerChampionStats> getChampionStats(@RequestParam String puuid) {
+        return service.getChampionsWithWins(puuid);
     }
 }
 

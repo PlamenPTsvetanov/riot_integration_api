@@ -41,15 +41,15 @@ public class RankedService extends BaseService<AccountDTO> {
     }
 
     //Rp5NE2Jlwx9v8udkxFL1H52_bY20ULWlY1YfOxg7M2l5z6D8mS5I2YD5POTiGuMcMXurkNvyE_7rCw
-    public List<PlayerChampionStats> getChampionsWithWins() {
+    public List<PlayerChampionStats> getChampionsWithWins(String puuid) {
         // Champion id -> list of stats
         List<PlayerChampionStats> champStats = new ArrayList<>();
         try {
-            List<String> lastMatches = this.getLastMatches("Rp5NE2Jlwx9v8udkxFL1H52_bY20ULWlY1YfOxg7M2l5z6D8mS5I2YD5POTiGuMcMXurkNvyE_7rCw");
+            List<String> lastMatches = this.getLastMatches(puuid);
 
             Map<MatchSimpleDataHolder, Set<ParticipantBean>> endData = new HashMap<>();
 
-            getEndDataFromMatches(lastMatches, endData);
+            getEndDataFromMatches(puuid, lastMatches, endData);
 
             for (MatchSimpleDataHolder holder : endData.keySet()) {
                 Set<ParticipantBean> data = endData.get(holder);
@@ -64,7 +64,7 @@ public class RankedService extends BaseService<AccountDTO> {
         return champStats;
     }
 
-    private void getEndDataFromMatches(List<String> lastMatches, Map<MatchSimpleDataHolder, Set<ParticipantBean>> endData) throws JsonProcessingException {
+    private void getEndDataFromMatches(String puuid, List<String> lastMatches, Map<MatchSimpleDataHolder, Set<ParticipantBean>> endData) throws JsonProcessingException {
         for (String match : lastMatches) {
             StringBuilder modifiedRequest =
                     new StringBuilder(_apiUrl)
@@ -84,10 +84,10 @@ public class RankedService extends BaseService<AccountDTO> {
                             .getParticipants()
                             .stream()
                             .filter(
-                                    e -> e.getPuuid().equals("Rp5NE2Jlwx9v8udkxFL1H52_bY20ULWlY1YfOxg7M2l5z6D8mS5I2YD5POTiGuMcMXurkNvyE_7rCw")).toList());
+                                    e -> e.getPuuid().equals(puuid)).toList());
 
             // We know we have only one participant unfiltered, so we proceed without fear of NPE
-            ParticipantBean currData = dto.getInfo().getParticipants().getFirst();
+            ParticipantBean currData = dto.getInfo().getParticipants().get(0);
 
             // Adding simple match data with an empty set
             Long champId = currData.getChampionId();

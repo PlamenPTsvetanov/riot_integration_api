@@ -27,6 +27,12 @@
 
 @if (accountService.account()) {
   <div>
-    <app-summoner [account]="accountService.account()!"/>
+    <app-summoner [account]="accountService.account()!" (accSignal)="setShowChamps()"/>
   </div>
+
+  @if (showChamps) {
+    <div>
+      <app-last-played-champions></app-last-played-champions>
+    </div>
+  }
 }

@@ -4,8 +4,8 @@
       <div class="profile-box">
         <img [src]='image' alt="Profile picture">
         <div class="profile-info">
-          <span class="game-name">{{ account.gameName }}</span>
-          <span class="game-tag">#{{ account.tagLine }}</span>
+          <span class="game-name">{{ account!.gameName }}</span>
+          <span class="game-tag">#{{ account!.tagLine }}</span>
         </div>
       </div>
       <app-summoner-ranked [summonerId]="summonerService.summoner()?.id!"/>

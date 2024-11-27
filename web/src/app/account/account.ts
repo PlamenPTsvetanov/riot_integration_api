@@ -3,3 +3,4 @@ export interface Account {
   gameName:string;
   tagLine:string;
 }
+
