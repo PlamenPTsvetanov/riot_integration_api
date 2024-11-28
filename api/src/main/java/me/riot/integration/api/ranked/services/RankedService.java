@@ -2,9 +2,11 @@ package me.riot.integration.api.ranked.services;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
+import me.riot.integration.api._common.datamodel.MatchHolderDTO;
 import me.riot.integration.api._common.services.BaseService;
 import me.riot.integration.api._common.utils.HTTPMethod;
 import me.riot.integration.api.account.dto.AccountDTO;
+import me.riot.integration.api.ranked.dto.full.FullEndDataHolder;
 import me.riot.integration.api.ranked.dto.simple.matchEndData.ParticipantBean;
 import me.riot.integration.api.ranked.dto.simple.matchEndData.SimpleMatchInfoHolder;
 import me.riot.integration.api.ranked.rest.PlayerChampionStats;
@@ -18,7 +20,50 @@ public class RankedService extends BaseService<AccountDTO> {
     private static final String BY_PUUID = "matches/by-puuid/";
     private static final String BY_MATCH_ID = "matches";
 
-    public List<String> getLastMatches(String puuid) {
+    //Rp5NE2Jlwx9v8udkxFL1H52_bY20ULWlY1YfOxg7M2l5z6D8mS5I2YD5POTiGuMcMXurkNvyE_7rCw
+    public List<PlayerChampionStats> getChampionsWithWins(String puuid) {
+        // Champion id -> list of stats
+        List<PlayerChampionStats> champStats = new ArrayList<>();
+        try {
+            List<String> lastMatches = this.getLast10MatchIds(puuid);
+
+            Map<Long, Set<ParticipantBean>> endData = new HashMap<>();
+
+            getEndDataForPlayerFromMatches(puuid, lastMatches, endData);
+
+            for (Set<ParticipantBean> data : endData.values()) {
+                champStats.add(getPlayerChampionStats(data));
+            }
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+        champStats.sort((f, s) -> s.getGamesPlayed().compareTo(f.getGamesPlayed()));
+        return champStats;
+    }
+
+    public List<FullEndDataHolder> getMatchHistory() {
+        List<FullEndDataHolder> endData = new ArrayList<>();
+        try {
+            List<String> matches = this.getLast10MatchIds("Rp5NE2Jlwx9v8udkxFL1H52_bY20ULWlY1YfOxg7M2l5z6D8mS5I2YD5POTiGuMcMXurkNvyE_7rCw");
+            for (String match : matches) {
+                FullEndDataHolder data = this.getEndMatchData(match, FullEndDataHolder.class);
+                endData.add(data);
+            }
+        } catch (Exception e) {
+
+        }
+
+        return endData;
+    }
+
+    /**
+     * Retrieves the ids of the last 10 (hardcoded) matches in order
+     * to display champion stats and match history.
+     *
+     * @param puuid - played id
+     * @return List of ids
+     */
+    private List<String> getLast10MatchIds(String puuid) {
         List<String> response;
         try {
             StringBuilder modifiedRequest =
@@ -39,40 +84,9 @@ public class RankedService extends BaseService<AccountDTO> {
         return response;
     }
 
-    //Rp5NE2Jlwx9v8udkxFL1H52_bY20ULWlY1YfOxg7M2l5z6D8mS5I2YD5POTiGuMcMXurkNvyE_7rCw
-    public List<PlayerChampionStats> getChampionsWithWins(String puuid) {
-        // Champion id -> list of stats
-        List<PlayerChampionStats> champStats = new ArrayList<>();
-        try {
-            List<String> lastMatches = this.getLastMatches(puuid);
-
-            Map<Long, Set<ParticipantBean>> endData = new HashMap<>();
-
-            getEndDataFromMatches(puuid, lastMatches, endData);
-
-            for (Set<ParticipantBean> data : endData.values()) {
-                champStats.add(getPlayerChampionStats(data));
-            }
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-        champStats.sort((f, s) -> s.getGamesPlayed().compareTo(f.getGamesPlayed()));
-        return champStats;
-    }
-
-    private void getEndDataFromMatches(String puuid, List<String> lastMatches, Map<Long, Set<ParticipantBean>> endData) throws JsonProcessingException {
+    private void getEndDataForPlayerFromMatches(String puuid, List<String> lastMatches, Map<Long, Set<ParticipantBean>> endData) throws JsonProcessingException {
         for (String match : lastMatches) {
-            StringBuilder modifiedRequest =
-                    new StringBuilder(_apiUrl)
-                            .append(CLASS_END_POINT)
-                            .append(BY_MATCH_ID)
-                            .append("/")
-                            .append(match);
-
-
-            String retrievedFromApi = super.sendRequest(modifiedRequest.toString(), HTTPMethod.GET);
-            SimpleMatchInfoHolder dto = _objectMapper.readValue(retrievedFromApi, new TypeReference<>() {
-            });
+            SimpleMatchInfoHolder dto = getEndMatchData(match, SimpleMatchInfoHolder.class);
             // Retrieving match data for chosen player only
             dto.getInfo().setParticipants(
                     dto
@@ -93,6 +107,16 @@ public class RankedService extends BaseService<AccountDTO> {
             endData.putIfAbsent(champId, new HashSet<>());
             endData.get(champId).add(currData);
         }
+    }
+
+    private <T extends MatchHolderDTO> T getEndMatchData(String match, Class<T> clazz) throws JsonProcessingException {
+        String modifiedRequest = _apiUrl +
+                CLASS_END_POINT +
+                BY_MATCH_ID +
+                "/" +
+                match;
+        String retrievedFromApi = super.sendRequest(modifiedRequest, HTTPMethod.GET);
+        return _objectMapper.readValue(retrievedFromApi, clazz);
     }
 
     private PlayerChampionStats getPlayerChampionStats(Set<ParticipantBean> data) {
