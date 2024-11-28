@@ -5,6 +5,7 @@ import lombok.Setter;
 
 import java.util.List;
 
+// Might not include in final project
 @Getter
 @Setter
 public class ChallengesDTO {
