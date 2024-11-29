@@ -38,12 +38,19 @@ export class AccountComponent {
       .subscribe({
           next: (response: Account) => {
             this.accountService.account.set(response);
+          },
+          complete: () => {
+            this.accountService.accountFetched.set(true);
           }
         }
       );
     this.destroyRef.onDestroy(() => {
       sub.unsubscribe();
     });
+  }
+
+  public getAccountFetched() {
+    return this.accountService.accountFetched();
   }
 }
 

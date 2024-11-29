@@ -9,6 +9,7 @@ import {Summoner} from '../summoner/summoner';
   providedIn: 'root'
 })
 export class AccountService {
+  accountFetched = signal(false);
   private _account = signal<Account | null>(null);
 
   private apiServerUrl = environment.apiServerUrl;

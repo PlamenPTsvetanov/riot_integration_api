@@ -1,4 +1,4 @@
-import {Component, inject, Input, OnInit, Output, signal} from '@angular/core';
+import {Component, inject, Input, OnInit, Output} from '@angular/core';
 import {LastPlayedChampionService} from './last-played-champion.service';
 import {LastPlayedChampion} from './last-played-champion';
 import {MatProgressSpinner} from '@angular/material/progress-spinner';
@@ -16,18 +16,18 @@ import {MatProgressSpinner} from '@angular/material/progress-spinner';
 export class LastPlayedChampionsComponent implements OnInit {
   @Input() puuid: string;
   @Output() lastPlayedChampions: Array<LastPlayedChampion> = [];
-  isFetching = signal(false);
+
   lpcService = inject(LastPlayedChampionService);
 
   ngOnInit(): void {
-    this.isFetching.set(true)
+    this.lpcService.setIsFetching(true)
     this.lpcService.getLastChampionsData(this.puuid)
       .subscribe({
           next: (champs) => {
             this.lastPlayedChampions = champs;
           },
           complete: () => {
-            this.isFetching.set(false);
+            this.lpcService.setIsFetching(false)
           }
         }
       )
