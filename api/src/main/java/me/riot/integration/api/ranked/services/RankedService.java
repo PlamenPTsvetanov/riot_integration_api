@@ -6,7 +6,7 @@ import me.riot.integration.api._common.datamodel.MatchHolderDTO;
 import me.riot.integration.api._common.services.BaseService;
 import me.riot.integration.api._common.utils.HTTPMethod;
 import me.riot.integration.api.account.dto.AccountDTO;
-import me.riot.integration.api.ranked.dto.full.FullEndDataHolder;
+import me.riot.integration.api.ranked.dto.full.MatchHistoryBean;
 import me.riot.integration.api.ranked.dto.simple.matchEndData.ParticipantBean;
 import me.riot.integration.api.ranked.dto.simple.matchEndData.SimpleMatchInfoHolder;
 import me.riot.integration.api.ranked.rest.PlayerChampionStats;
@@ -41,16 +41,27 @@ public class RankedService extends BaseService<AccountDTO> {
         return champStats;
     }
 
-    public List<FullEndDataHolder> getMatchHistory() {
-        List<FullEndDataHolder> endData = new ArrayList<>();
+    public List<MatchHistoryBean> getMatchHistory(String puuid) {
+        List<MatchHistoryBean> endData = new ArrayList<>();
         try {
-            List<String> matches = this.getLast10MatchIds("Rp5NE2Jlwx9v8udkxFL1H52_bY20ULWlY1YfOxg7M2l5z6D8mS5I2YD5POTiGuMcMXurkNvyE_7rCw");
+            List<String> matches = this.getLast10MatchIds(puuid);
             for (String match : matches) {
-                FullEndDataHolder data = this.getEndMatchData(match, FullEndDataHolder.class);
+                MatchHistoryBean data = this.getEndMatchData(match, MatchHistoryBean.class);
+
+                data.getInfo().setParticipants(
+                        data
+                                .getInfo()
+                                .getParticipants()
+                                .stream()
+                                .filter(
+                                        e -> e.getPuuid().equals(puuid)).toList());
+                // We know participant will be in the game, because that's how we got the match data in the first place
+                data.getInfo().getParticipants().get(0).setChampionImage(this.getChampionImageBytes(data.getInfo().getParticipants().get(0).getChampionName()));
                 endData.add(data);
             }
         } catch (Exception e) {
-
+            // TODO gotta fix these and add logging at some point
+            throw new RuntimeException(e);
         }
 
         return endData;

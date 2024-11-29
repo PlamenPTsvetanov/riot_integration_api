@@ -8,13 +8,14 @@ import {ErrorStateMatcher} from '@angular/material/core';
 import {MatIconModule} from '@angular/material/icon';
 import {MatButtonModule} from '@angular/material/button';
 import {SummonerComponent} from '../summoner/summoner.component';
+import {MatchHistoryComponent} from "../match-history/match-history.component";
 
 @Component({
   selector: 'app-account',
   templateUrl: './account.component.html',
   styleUrl: './account.component.css',
   standalone: true,
-  imports: [MatFormFieldModule, MatInputModule, ReactiveFormsModule, MatIconModule, MatButtonModule, SummonerComponent],
+  imports: [MatFormFieldModule, MatInputModule, ReactiveFormsModule, MatIconModule, MatButtonModule, SummonerComponent, MatchHistoryComponent],
 })
 export class AccountComponent {
 
@@ -49,7 +50,7 @@ export class AccountComponent {
     });
   }
 
-  public getAccountFetched() {
+  public accountFetched() {
     return this.accountService.accountFetched();
   }
 }

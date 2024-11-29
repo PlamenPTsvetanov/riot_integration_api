@@ -26,7 +26,13 @@
 </form>
 
 @if (accountService.account()) {
-  <div>
+  <div class="summoner-data">
     <app-summoner [account]="accountService.account()!"/>
+
+    <div class="bigger-column">
+      @if (accountService.accountFetched() && accountService.account()) {
+        <app-match-history [puuid]="accountService.account()!.puuid"></app-match-history>
+      }
+    </div>
   </div>
 }

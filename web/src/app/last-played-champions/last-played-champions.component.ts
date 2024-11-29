@@ -1,4 +1,4 @@
-import {Component, inject, Input, OnInit, Output} from '@angular/core';
+import {Component, DestroyRef, inject, Input, OnInit, Output} from '@angular/core';
 import {LastPlayedChampionService} from './last-played-champion.service';
 import {LastPlayedChampion} from './last-played-champion';
 import {MatProgressSpinner} from '@angular/material/progress-spinner';
@@ -14,6 +14,7 @@ import {MatProgressSpinner} from '@angular/material/progress-spinner';
 })
 
 export class LastPlayedChampionsComponent implements OnInit {
+  private destroyRef = inject(DestroyRef);
   @Input() puuid: string;
   @Output() lastPlayedChampions: Array<LastPlayedChampion> = [];
 
@@ -21,7 +22,7 @@ export class LastPlayedChampionsComponent implements OnInit {
 
   ngOnInit(): void {
     this.lpcService.setIsFetching(true)
-    this.lpcService.getLastChampionsData(this.puuid)
+    const sub = this.lpcService.getLastChampionsData(this.puuid)
       .subscribe({
           next: (champs) => {
             this.lastPlayedChampions = champs;
@@ -31,6 +32,9 @@ export class LastPlayedChampionsComponent implements OnInit {
           }
         }
       )
+    this.destroyRef.onDestroy(() => {
+      sub.unsubscribe();
+    });
   }
 
 }

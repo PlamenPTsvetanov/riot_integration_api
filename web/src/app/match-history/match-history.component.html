@@ -1,1 +1,22 @@
-<p>match-history works!</p>
+@if (this.mhService.fetchingLastMatches()) {
+  <div>Retrieving match history data</div>
+}
+
+@for (game of matchHistory; track game.uuid) {
+  @let player = game.info.participants[0]!;
+
+  <div class="game-info-card">
+
+
+    <div class="card-header">
+      <div class="card-title">
+        <img class="champion-icon" src="data:image/png;base64,{{player.championImage}}" alt="Champion">
+        <div [ngClass]="{'win': player.win, 'defeat': !player.win}">{{ player.win ? "WIN" : "DEFEAT" }}</div>
+        <span class="kills">{{ player.kills }}</span>/<span class="deaths">{{ player.deaths }}</span>/<span
+        class="assists">{{ player.assists }}</span>
+        <!--        <p>{{ (game.info.gameDuration / 60.0).toFixed(2) }}</p>-->
+      </div>
+    </div>
+  </div>
+
+}

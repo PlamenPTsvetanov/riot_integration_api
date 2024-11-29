@@ -1,5 +1,6 @@
 package me.riot.integration.api.account.services;
 
+import lombok.extern.slf4j.Slf4j;
 import me.riot.integration.api._common.services.BaseService;
 import me.riot.integration.api._common.utils.HTTPMethod;
 import me.riot.integration.api.account.dto.AccountDTO;
@@ -9,6 +10,7 @@ import org.springframework.stereotype.Service;
 import java.net.URLEncoder;
 
 @Service
+@Slf4j
 public class AccountService extends BaseService<AccountDTO> {
     private static final String CLASS_END_POINT = "account/v1/";
     private static final String BY_RIOT_ID_EP = "accounts/by-riot-id/";
@@ -32,6 +34,7 @@ public class AccountService extends BaseService<AccountDTO> {
 
 
             String retrievedFromApi = super.sendRequest(modifiedRequest.toString(), HTTPMethod.GET);
+            log.info(retrievedFromApi);
             response = _objectMapper.readValue(retrievedFromApi, AccountDTO.class);
         } catch (Exception e) {
             throw new RuntimeException(e);

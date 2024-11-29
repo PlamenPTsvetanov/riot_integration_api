@@ -1,0 +1,29 @@
+export interface ParticipantData {
+  kills: number;
+  assists: number;
+  deaths: number;
+  champLevel: number;
+  championId: number;
+  championName: string;
+  doubleKills: number;
+  goldEarned: number;
+  item0: number;
+  item1: number;
+  item2: number;
+  item3: number;
+  item4: number;
+  item5: number;
+  item6: number;
+  neutralMinionsKilled: number;
+  participantId: number;
+  profileIcon: number;
+  puuid: string;
+  riotIdGameName: string;
+  teamId: number;
+  teamPosition: string;
+  totalMinionsKilled: number;
+  visionScore: number;
+  wardsPlaced: number;
+  win: boolean;
+  championImage: string;
+}

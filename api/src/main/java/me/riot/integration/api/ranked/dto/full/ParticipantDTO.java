@@ -33,5 +33,6 @@ public class ParticipantDTO {
     private int visionScore;
     private int wardsPlaced;
     private boolean win;
+    private byte[] championImage;
 }
 

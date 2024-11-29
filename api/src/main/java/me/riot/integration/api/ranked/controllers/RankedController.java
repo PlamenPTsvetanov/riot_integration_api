@@ -1,6 +1,6 @@
 package me.riot.integration.api.ranked.controllers;
 
-import me.riot.integration.api.ranked.dto.full.FullEndDataHolder;
+import me.riot.integration.api.ranked.dto.full.MatchHistoryBean;
 import me.riot.integration.api.ranked.rest.PlayerChampionStats;
 import me.riot.integration.api.ranked.services.RankedService;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -21,8 +21,8 @@ public class RankedController {
     }
 
     @GetMapping(path = "/match-history")
-    public List<FullEndDataHolder> getMatchHistory() {
-        return service.getMatchHistory();
+    public List<MatchHistoryBean> getMatchHistory(@RequestParam String puuid) {
+        return service.getMatchHistory(puuid);
     }
 
     @GetMapping(path = "/champion-stats")
