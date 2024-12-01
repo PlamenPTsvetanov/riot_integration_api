@@ -7,12 +7,16 @@ import me.riot.integration.api._common.services.BaseService;
 import me.riot.integration.api._common.utils.HTTPMethod;
 import me.riot.integration.api.account.dto.AccountDTO;
 import me.riot.integration.api.ranked.dto.full.MatchHistoryBean;
+import me.riot.integration.api.ranked.dto.full.ParticipantDTO;
 import me.riot.integration.api.ranked.dto.simple.matchEndData.ParticipantBean;
 import me.riot.integration.api.ranked.dto.simple.matchEndData.SimpleMatchInfoHolder;
+import me.riot.integration.api.ranked.rest.InfoOutRestBean;
+import me.riot.integration.api.ranked.rest.MatchHistoryOutRestBean;
 import me.riot.integration.api.ranked.rest.PlayerChampionStats;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class RankedService extends BaseService<AccountDTO> {
@@ -41,23 +45,55 @@ public class RankedService extends BaseService<AccountDTO> {
         return champStats;
     }
 
-    public List<MatchHistoryBean> getMatchHistory(String puuid) {
-        List<MatchHistoryBean> endData = new ArrayList<>();
+    public List<MatchHistoryOutRestBean> getMatchHistory(String puuid) {
+        List<MatchHistoryOutRestBean> endData = new ArrayList<>();
         try {
             List<String> matches = this.getLast10MatchIds(puuid);
             for (String match : matches) {
+                MatchHistoryOutRestBean outRestBean = new MatchHistoryOutRestBean();
                 MatchHistoryBean data = this.getEndMatchData(match, MatchHistoryBean.class);
 
-                data.getInfo().setParticipants(
-                        data
-                                .getInfo()
-                                .getParticipants()
-                                .stream()
-                                .filter(
-                                        e -> e.getPuuid().equals(puuid)).toList());
-                // We know participant will be in the game, because that's how we got the match data in the first place
-                data.getInfo().getParticipants().get(0).setChampionImage(this.getChampionImageBytes(data.getInfo().getParticipants().get(0).getChampionName()));
-                endData.add(data);
+                // Retrieving player with other participants
+                List<ParticipantDTO> otherParticipants = getPlayerWithOtherParticipants(puuid, outRestBean, data);
+
+                // For ease of use
+                InfoOutRestBean matchInfo = outRestBean.getInfo();
+
+                // Getting player champion image
+                matchInfo.getPlayer().setChampionImage(this.getChampionImageBytes(matchInfo.getPlayer().getChampionName()));
+                // Getting other participants champion images
+                for (ParticipantDTO otherParticipant : otherParticipants) {
+                    otherParticipant.setChampionImage(this.getChampionImageBytes(otherParticipant.getChampionName()));
+                }
+
+                // Splitting other participants into my team and other team
+                for (ParticipantDTO otherParticipant : otherParticipants) {
+                    if (otherParticipant.getTeamId() == matchInfo.getPlayer().getTeamId()) {
+                        matchInfo.getMyTeam().add(otherParticipant);
+                    } else {
+                        matchInfo.getOtherTeam().add(otherParticipant);
+                    }
+                }
+
+                // Adding player to my team
+                matchInfo.getMyTeam().add(matchInfo.getPlayer());
+
+                matchInfo.setMyTeam(matchInfo.getMyTeam().stream()
+                        .sorted(Comparator.comparingInt(p -> getPositionPriority(p.getTeamPosition())))
+                        .collect(Collectors.toList()));
+
+                matchInfo.setOtherTeam(matchInfo.getOtherTeam().stream()
+                        .sorted(Comparator.comparingInt(p -> getPositionPriority(p.getTeamPosition())))
+                        .collect(Collectors.toList()));
+
+                // Hard-coded by riot
+                if (data.getInfo().getQueueId() == 420) {
+                    matchInfo.setGameMode("Ranked 5 vs 5");
+                }
+                // Adding other params
+                matchInfo.setTeams(data.getInfo().getTeams());
+                matchInfo.setGameDuration(data.getInfo().getGameDuration());
+                endData.add(outRestBean);
             }
         } catch (Exception e) {
             // TODO gotta fix these and add logging at some point
@@ -65,6 +101,24 @@ public class RankedService extends BaseService<AccountDTO> {
         }
 
         return endData;
+    }
+
+    private List<ParticipantDTO> getPlayerWithOtherParticipants(String puuid, MatchHistoryOutRestBean outRestBean, MatchHistoryBean data) {
+        outRestBean.setInfo(new InfoOutRestBean());
+        List<ParticipantDTO> participants = data.getInfo().getParticipants();
+
+        ParticipantDTO player = participants.stream()
+                .filter(e -> e.getPuuid().equals(puuid))
+                .findFirst()
+                .orElseThrow(() -> new NoSuchElementException("Player not found"));
+
+        List<ParticipantDTO> otherParticipants = participants.stream()
+                .filter(e -> !e.getPuuid().equals(puuid))
+                .collect(Collectors.toList());
+
+        outRestBean.setInfo(new InfoOutRestBean());
+        outRestBean.getInfo().setPlayer(player);
+        return otherParticipants;
     }
 
     /**
@@ -83,7 +137,7 @@ public class RankedService extends BaseService<AccountDTO> {
                             .append(BY_PUUID)
                             .append(puuid)
                             .append("/ids")
-                            .append("?start=0&count=10");
+                            .append("?start=0&count=1");
 
 
             String retrievedFromApi = super.sendRequest(modifiedRequest.toString(), HTTPMethod.GET);
@@ -170,12 +224,24 @@ public class RankedService extends BaseService<AccountDTO> {
     }
 
     private byte[] getChampionImageBytes(String championName) {
-        StringBuilder imageRequest =
-                new StringBuilder(_dataDragonUrl)
-                        .append("img/")
-                        .append("champion/")
-                        .append(championName)
-                        .append(".png");
-        return super.sendRequestBytes(imageRequest.toString(), HTTPMethod.GET);
+        String imageRequest = _dataDragonUrl +
+                "img/" +
+                "champion/" +
+                championName +
+                ".png";
+        return super.sendRequestBytes(imageRequest, HTTPMethod.GET);
     }
+
+    private int getPositionPriority(String teamPosition) {
+        return switch (teamPosition) {
+            case "TOP" -> 1;
+            case "JUNGLE" -> 2;
+            case "MIDDLE" -> 3;
+            case "BOTTOM" -> 4;
+            case "UTILITY" -> 5;
+            default -> Integer.MAX_VALUE; // Shouldn't happen
+        };
+    }
+
 }
+

@@ -3,7 +3,7 @@
 }
 
 @for (game of matchHistory; track game.uuid) {
-  @let player = game.info.participants[0]!;
+  @let player = game.info.player!;
 
   <div class="game-info-card">
 
@@ -11,10 +11,15 @@
     <div class="card-header">
       <div class="card-title">
         <img class="champion-icon" src="data:image/png;base64,{{player.championImage}}" alt="Champion">
-        <div [ngClass]="{'win': player.win, 'defeat': !player.win}">{{ player.win ? "WIN" : "DEFEAT" }}</div>
+        <div class="end-score">
+          <div [ngClass]="{'win': player.win, 'defeat': !player.win}">{{ player.win ? "WIN" : "DEFEAT" }}</div>
+          <div class="game-duration">{{ Math.floor(game.info.gameDuration / 60) }}
+            m {{ Math.floor(game.info.gameDuration % 60) }}s
+          </div>
+        </div>
         <span class="kills">{{ player.kills }}</span>/<span class="deaths">{{ player.deaths }}</span>/<span
         class="assists">{{ player.assists }}</span>
-        <!--        <p>{{ (game.info.gameDuration / 60.0).toFixed(2) }}</p>-->
+        <div class="game-mode">{{ game.info.gameMode }}</div>
       </div>
     </div>
   </div>

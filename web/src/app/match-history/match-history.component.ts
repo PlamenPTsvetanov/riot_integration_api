@@ -42,4 +42,5 @@ export class MatchHistoryComponent implements OnInit {
     });
   }
 
+  protected readonly Math = Math;
 }
