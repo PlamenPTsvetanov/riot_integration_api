@@ -41,9 +41,101 @@
               </div>
             }
           </div>
+          <button class="open-button" (click)="selectGame(game.uuid)">↓</button>
         </div>
       </div>
     </div>
+
+    @if (mhService.selectedGame() != null && mhService.selectedGame() === game.uuid) {
+      <div class="all-players-data">
+        <div class="data-team-information">
+          <table class="teammates-table">
+            <thead>
+            <tr>
+              <th class="champ-header">Champion</th>
+              <th>Player Info</th>
+              <th>KDA</th>
+              <th>Vision Score</th>
+              <th>CS</th>
+              <th>Gold</th>
+            </tr>
+            </thead>
+            <tbody>
+              @for (teammate of myTeam; track teammate.puuid) {
+                <tr>
+                  <td>
+                    <div class="table-data-image">
+                      <img class="data-champion-icon" src="data:image/png;base64,{{teammate.championImage}}"
+                           alt="Champion">
+                    </div>
+                  </td>
+                  <td
+                    [ngClass]="{'data-player-info-player': teammate.puuid == player.puuid, 'data-player-info': teammate.puuid != player.puuid}">
+                    {{ teammate.riotIdGameName }}
+                  </td>
+                  <td class="data-kda">
+                    <span>{{ teammate.kills }}</span>/<span>{{ teammate.deaths }}</span>/<span>{{ teammate.assists }}</span>
+                  </td>
+                  <td class="data-vision-score">
+                    {{ teammate.visionScore }} ({{ teammate.wardsPlaced }})
+                  </td>
+                  <td class="data-cs">
+                    {{ teammate.totalMinionsKilled + teammate.neutralMinionsKilled }}
+                  </td>
+                  <td class="data-gold">
+                    {{ teammate.goldEarned }}
+                  </td>
+                </tr>
+              }
+            </tbody>
+
+          </table>
+        </div>
+        <div class="data-team-information">
+          <table class="enemies-table">
+            <thead>
+            <tr>
+              <th class="champ-header">Champion</th>
+              <th>Player Info</th>
+              <th>KDA</th>
+              <th>Vision Score</th>
+              <th>CS</th>
+              <th>Gold</th>
+            </tr>
+            </thead>
+            <tbody>
+              @for (enemy of otherTeam; track enemy.puuid) {
+                <tr>
+                  <td>
+                    <div class="table-data-image">
+                      <img class="data-champion-icon" src="data:image/png;base64,{{enemy.championImage}}"
+                           alt="Champion">
+                    </div>
+                  </td>
+                  <td
+                    [ngClass]="{'data-player-info-player': enemy.puuid == player.puuid, 'data-player-info': enemy.puuid != player.puuid}">
+                    {{ enemy.riotIdGameName }}
+                  </td>
+                  <td class="data-kda">
+                    <span>{{ enemy.kills }}</span>/<span>{{ enemy.deaths }}</span>/<span>{{ enemy.assists }}</span>
+                  </td>
+                  <td class="data-vision-score">
+                    {{ enemy.visionScore }} ({{ enemy.wardsPlaced }})
+                  </td>
+                  <td class="data-cs">
+                    {{ enemy.totalMinionsKilled + enemy.neutralMinionsKilled }}
+                  </td>
+                  <td class="data-gold">
+                    {{ enemy.goldEarned }}
+                  </td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+    }
   </div>
 
 }

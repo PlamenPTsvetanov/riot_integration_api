@@ -11,6 +11,7 @@ export class MatchHistoryService {
 
 
   private _fetchingLastMatches = signal(true)
+  private _selectedGame = signal<string | null>(null)
   private apiServerUrl = environment.apiServerUrl;
 
   http = inject(HttpClient);
@@ -28,5 +29,13 @@ export class MatchHistoryService {
 
   public setFetchingLastMatches(value: boolean) {
     this._fetchingLastMatches.set(value);
+  }
+
+  get selectedGame(): WritableSignal<string | null> {
+    return this._selectedGame;
+  }
+
+  public setSelectedGame(value: string | null) {
+    this._selectedGame.set(value);
   }
 }

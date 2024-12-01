@@ -15,14 +15,15 @@ import {NgClass} from '@angular/common';
 export class MatchHistoryComponent implements OnInit {
   private destroyRef = inject(DestroyRef);
 
+  mhService = inject(MatchHistoryService)
+  @Input() puuid: string
+  @Output() matchHistory: Array<MatchHistory> = []
+
+
   ngOnInit(): void {
     this.mhService.setFetchingLastMatches(false)
     this.getMatchHistory();
   }
-
-  mhService = inject(MatchHistoryService)
-  @Input() puuid: string
-  @Output() matchHistory: Array<MatchHistory> = []
 
   public getMatchHistory() {
     this.mhService.setFetchingLastMatches(true)
@@ -40,6 +41,14 @@ export class MatchHistoryComponent implements OnInit {
     this.destroyRef.onDestroy(() => {
       sub.unsubscribe();
     });
+  }
+
+  selectGame(gameUuid: string | null) {
+    if (this.mhService.selectedGame() === gameUuid) {
+      this.mhService.setSelectedGame(null);
+    } else {
+      this.mhService.setSelectedGame(gameUuid);
+    }
   }
 
   protected readonly Math = Math;

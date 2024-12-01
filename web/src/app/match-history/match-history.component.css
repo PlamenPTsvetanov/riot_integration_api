@@ -10,12 +10,12 @@
   margin: 20px auto;
 }
 
-
 .card-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
 }
+
 .card-title {
   display: flex;
   gap: 50px;
@@ -44,6 +44,7 @@
   display: flex;
   gap: 10px
 }
+
 .team-data {
   flex: 1;
   display: flex;
@@ -101,6 +102,19 @@
   justify-content: space-between;
 }
 
+.open-button {
+  background-color: transparent;
+  background-repeat: no-repeat;
+  border: none;
+  cursor: pointer;
+  overflow: hidden;
+  outline: none;
+  color: #ffffff;
+  font-size: 30px;
+  font-weight: 1000;
+  margin-left: -10px;
+}
+
 .win {
   font-size: 36px;
   font-weight: 600;
@@ -136,7 +150,117 @@
   font-size: 16px;
   font-weight: 300;
 }
+
 .splitter {
   font-size: 24px;
   font-weight: 700;
+}
+
+.teammates-table {
+  width: 80%;
+  border-collapse: collapse;
+  background-color: rgba(12, 24, 100, 0.1);
+  border: 1px;
+  border-radius: 30px;
+
+}
+
+.enemies-table {
+  width: 80%;
+  border-collapse: collapse;
+  background-color: rgba(100, 24, 12, 0.1);
+  border: 1px;
+  border-radius: 30px;
+
+}
+
+.enemies-table th {
+  text-align: center;
+  padding: 10px;
+  font-weight: bold;
+}
+
+.enemies-table td {
+  justify-content: center;
+  text-align: center;
+}
+
+.teammates-table th {
+  text-align: center;
+  padding: 10px;
+  font-weight: bold;
+}
+
+.teammates-table td {
+  justify-content: center;
+  text-align: center;
+}
+
+.enemies-table table-data-player-info {
+  justify-content: center;
+}
+
+.champ-header {
+  max-width: 50px;
+}
+
+.table-data-image {
+  max-width: 50px;
+  margin-left: 30px;
+}
+
+.all-players-data {
+  margin-top: 30px;
+  display: flex;
+  flex-direction: column;
+}
+
+.data-team-information {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 50px;
+}
+
+.data-champion-icon {
+  max-width: 40px;
+  max-height: 40px;
+  border-radius: 8px;
+  margin-right: 12px;
+}
+
+.data-player-info {
+  min-height: 40px;
+  min-width: 150px;
+  justify-content: center;
+  text-align: center;
+}
+
+.data-player-info-player {
+  min-width: 150px;
+  min-height: 40px;
+  color: #ffed5e;
+  font-weight: 700;
+}
+
+.data-kda {
+  min-height: 46px;
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  text-align: center;
+}
+
+.data-cs {
+  min-width: 50px;
+  margin-left: 10px;
+}
+
+.data-gold {
+  min-width: 50px;
+}
+
+.data-vision-score {
+  min-width: 50px;
 }
