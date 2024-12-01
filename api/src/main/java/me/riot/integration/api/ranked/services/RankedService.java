@@ -137,7 +137,7 @@ public class RankedService extends BaseService<AccountDTO> {
                             .append(BY_PUUID)
                             .append(puuid)
                             .append("/ids")
-                            .append("?start=0&count=1");
+                            .append("?start=0&count=2");
 
 
             String retrievedFromApi = super.sendRequest(modifiedRequest.toString(), HTTPMethod.GET);

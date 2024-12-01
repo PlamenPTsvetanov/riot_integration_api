@@ -4,10 +4,10 @@
 
 @for (game of matchHistory; track game.uuid) {
   @let player = game.info.player!;
+  @let myTeam = game.info.myTeam!;
+  @let otherTeam = game.info.otherTeam!;
 
   <div class="game-info-card">
-
-
     <div class="card-header">
       <div class="card-title">
         <img class="champion-icon" src="data:image/png;base64,{{player.championImage}}" alt="Champion">
@@ -17,9 +17,31 @@
             m {{ Math.floor(game.info.gameDuration % 60) }}s
           </div>
         </div>
-        <span class="kills">{{ player.kills }}</span>/<span class="deaths">{{ player.deaths }}</span>/<span
-        class="assists">{{ player.assists }}</span>
-        <div class="game-mode">{{ game.info.gameMode }}</div>
+        <div class="kda">
+          <span class="kills">{{ player.kills }}</span><span class="splitter">/</span><span
+          class="deaths">{{ player.deaths }}</span><span class="splitter">/</span><span
+          class="assists">{{ player.assists }}</span>
+        </div>
+        <div class="teams">
+          <div class="team-data">
+            @for (teammate of myTeam; track teammate.puuid) {
+              <div class="participant-info-left">
+                <div
+                  [ngClass]="{'compact-player-info-left-player': teammate.puuid == player.puuid, 'compact-player-info-left':teammate.puuid != player.puuid}">{{ teammate.riotIdGameName }}
+                </div>
+                <img class="participant-icon" src="data:image/png;base64,{{teammate.championImage}}" alt="Champion">
+              </div>
+            }
+          </div>
+          <div class="team-data">
+            @for (enemy of otherTeam; track enemy.puuid) {
+              <div class="participant-info">
+                <img class="participant-icon" src="data:image/png;base64,{{enemy.championImage}}" alt="Champion">
+                <div class="compact-player-info"> {{ enemy.riotIdGameName }}</div>
+              </div>
+            }
+          </div>
+        </div>
       </div>
     </div>
   </div>

@@ -10,5 +10,4 @@ import java.util.UUID;
 @Setter
 public class MatchHistoryBean implements MatchHolderDTO {
     private InfoDTO info;
-    private UUID uuid = UUID.randomUUID(); // adding some system identifier, so I can traverse it in the front-end
 }
