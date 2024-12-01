@@ -12,7 +12,9 @@ import me.riot.integration.api.ranked.dto.simple.matchEndData.ParticipantBean;
 import me.riot.integration.api.ranked.dto.simple.matchEndData.SimpleMatchInfoHolder;
 import me.riot.integration.api.ranked.rest.InfoOutRestBean;
 import me.riot.integration.api.ranked.rest.MatchHistoryOutRestBean;
+import me.riot.integration.api.ranked.rest.ParticipantOutRestBean;
 import me.riot.integration.api.ranked.rest.PlayerChampionStats;
+import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -23,6 +25,12 @@ public class RankedService extends BaseService<AccountDTO> {
     private static final String CLASS_END_POINT = "lol/match/v5/";
     private static final String BY_PUUID = "matches/by-puuid/";
     private static final String BY_MATCH_ID = "matches";
+    private final ModelMapper modelMapper;
+
+    public RankedService(ModelMapper modelMapper) {
+        super();
+        this.modelMapper = modelMapper;
+    }
 
     //Rp5NE2Jlwx9v8udkxFL1H52_bY20ULWlY1YfOxg7M2l5z6D8mS5I2YD5POTiGuMcMXurkNvyE_7rCw
     public List<PlayerChampionStats> getChampionsWithWins(String puuid) {
@@ -54,7 +62,7 @@ public class RankedService extends BaseService<AccountDTO> {
                 MatchHistoryBean data = this.getEndMatchData(match, MatchHistoryBean.class);
 
                 // Retrieving player with other participants
-                List<ParticipantDTO> otherParticipants = getPlayerWithOtherParticipants(puuid, outRestBean, data);
+                List<ParticipantOutRestBean> otherParticipants = getPlayerWithOtherParticipants(puuid, outRestBean, data);
 
                 // For ease of use
                 InfoOutRestBean matchInfo = outRestBean.getInfo();
@@ -62,12 +70,12 @@ public class RankedService extends BaseService<AccountDTO> {
                 // Getting player champion image
                 matchInfo.getPlayer().setChampionImage(this.getChampionImageBytes(matchInfo.getPlayer().getChampionName()));
                 // Getting other participants champion images
-                for (ParticipantDTO otherParticipant : otherParticipants) {
+                for (ParticipantOutRestBean otherParticipant : otherParticipants) {
                     otherParticipant.setChampionImage(this.getChampionImageBytes(otherParticipant.getChampionName()));
                 }
 
                 // Splitting other participants into my team and other team
-                for (ParticipantDTO otherParticipant : otherParticipants) {
+                for (ParticipantOutRestBean otherParticipant : otherParticipants) {
                     if (otherParticipant.getTeamId() == matchInfo.getPlayer().getTeamId()) {
                         matchInfo.getMyTeam().add(otherParticipant);
                     } else {
@@ -103,7 +111,17 @@ public class RankedService extends BaseService<AccountDTO> {
         return endData;
     }
 
-    private List<ParticipantDTO> getPlayerWithOtherParticipants(String puuid, MatchHistoryOutRestBean outRestBean, MatchHistoryBean data) {
+    private void manageItemIcons(ParticipantDTO p, ParticipantOutRestBean o) {
+        o.setItem0(p.getItem0() == 0 ? null : this.getItemImageBytes(p.getItem0()));
+        o.setItem1(p.getItem1() == 0 ? null : this.getItemImageBytes(p.getItem1()));
+        o.setItem2(p.getItem2() == 0 ? null : this.getItemImageBytes(p.getItem2()));
+        o.setItem3(p.getItem3() == 0 ? null : this.getItemImageBytes(p.getItem3()));
+        o.setItem4(p.getItem4() == 0 ? null : this.getItemImageBytes(p.getItem4()));
+        o.setItem5(p.getItem5() == 0 ? null : this.getItemImageBytes(p.getItem5()));
+        o.setItem6(p.getItem6() == 0 ? null : this.getItemImageBytes(p.getItem6()));
+    }
+
+    private List<ParticipantOutRestBean> getPlayerWithOtherParticipants(String puuid, MatchHistoryOutRestBean outRestBean, MatchHistoryBean data) {
         outRestBean.setInfo(new InfoOutRestBean());
         List<ParticipantDTO> participants = data.getInfo().getParticipants();
 
@@ -114,11 +132,25 @@ public class RankedService extends BaseService<AccountDTO> {
 
         List<ParticipantDTO> otherParticipants = participants.stream()
                 .filter(e -> !e.getPuuid().equals(puuid))
-                .collect(Collectors.toList());
+                .toList();
 
         outRestBean.setInfo(new InfoOutRestBean());
-        outRestBean.getInfo().setPlayer(player);
-        return otherParticipants;
+        ParticipantOutRestBean map = modelMapper.map(player, ParticipantOutRestBean.class);
+        manageItemIcons(player, map);
+        outRestBean.getInfo().setPlayer(map);
+
+        List<ParticipantOutRestBean> beans = new ArrayList<>();
+        for (ParticipantDTO otherParticipant : otherParticipants) {
+            ParticipantOutRestBean out = getMap(otherParticipant);
+            manageItemIcons(otherParticipant, out);
+            beans.add(out);
+        }
+
+        return beans;
+    }
+
+    private ParticipantOutRestBean getMap(ParticipantDTO otherParticipant) {
+        return modelMapper.map(otherParticipant, ParticipantOutRestBean.class);
     }
 
     /**
@@ -137,7 +169,7 @@ public class RankedService extends BaseService<AccountDTO> {
                             .append(BY_PUUID)
                             .append(puuid)
                             .append("/ids")
-                            .append("?start=0&count=2");
+                            .append("?start=0&count=10");
 
 
             String retrievedFromApi = super.sendRequest(modifiedRequest.toString(), HTTPMethod.GET);
@@ -228,6 +260,15 @@ public class RankedService extends BaseService<AccountDTO> {
                 "img/" +
                 "champion/" +
                 championName +
+                ".png";
+        return super.sendRequestBytes(imageRequest, HTTPMethod.GET);
+    }
+
+    private byte[] getItemImageBytes(Integer itemId) {
+        String imageRequest = _dataDragonUrl +
+                "img/" +
+                "item/" +
+                itemId +
                 ".png";
         return super.sendRequestBytes(imageRequest, HTTPMethod.GET);
     }

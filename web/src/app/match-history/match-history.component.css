@@ -183,6 +183,7 @@
 .enemies-table td {
   justify-content: center;
   text-align: center;
+  margin-bottom: 10px;
 }
 
 .teammates-table th {
@@ -194,6 +195,7 @@
 .teammates-table td {
   justify-content: center;
   text-align: center;
+  margin-bottom: 10px;
 }
 
 .enemies-table table-data-player-info {
@@ -263,4 +265,22 @@
 
 .data-vision-score {
   min-width: 50px;
+}
+
+.data-items {
+  min-width: 105px;
+  max-width: 105px;
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
+  flex-wrap: wrap;
+  gap: 5px;
+  margin-left: 30px;
+}
+
+.data-item-slot {
+  min-width: 20px;
+  min-height: 20px;
+  max-width: 20px;
+  max-height: 20px;
 }

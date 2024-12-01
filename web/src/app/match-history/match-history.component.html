@@ -58,6 +58,7 @@
               <th>Vision Score</th>
               <th>CS</th>
               <th>Gold</th>
+              <th>Items</th>
             </tr>
             </thead>
             <tbody>
@@ -85,6 +86,67 @@
                   <td class="data-gold">
                     {{ teammate.goldEarned }}
                   </td>
+                  <td>
+                    <div class="data-items">
+
+                      @if (teammate.item0 != null) {
+                        <img class="data-item-slot" src="data:image/png;base64,{{teammate.item0}}"
+                             alt="Item0">
+                      } @else {
+                        <div class="data-item-slot">
+                          ▢
+                        </div>
+                      }
+                      @if (teammate.item1 != null) {
+                        <img class="data-item-slot" src="data:image/png;base64,{{teammate.item1}}"
+                             alt="Item1">
+                      } @else {
+                        <div class="data-item-slot">
+                          ▢
+                        </div>
+                      }
+                      @if (teammate.item2 != null) {
+                        <img class="data-item-slot" src="data:image/png;base64,{{teammate.item2}}"
+                             alt="Item2">
+                      } @else {
+                        <div class="data-item-slot">
+                          ▢
+                        </div>
+                      }
+                      @if (teammate.item6 != null) {
+                        <img class="data-item-slot" src="data:image/png;base64,{{teammate.item6}}"
+                             alt="Item6">
+                      } @else {
+                        <div class="data-item-slot">
+                          ▢
+                        </div>
+                      }
+                      @if (teammate.item3 != null) {
+                        <img class="data-item-slot" src="data:image/png;base64,{{teammate.item3}}"
+                             alt="Item3">
+                      } @else {
+                        <div class="data-item-slot">
+                          ▢
+                        </div>
+                      }
+                      @if (teammate.item4 != null) {
+                        <img class="data-item-slot" src="data:image/png;base64,{{teammate.item4}}"
+                             alt="Item4">
+                      } @else {
+                        <div class="data-item-slot">
+                          ▢
+                        </div>
+                      }
+                      @if (teammate.item5 != null) {
+                        <img class="data-item-slot" src="data:image/png;base64,{{teammate.item5}}"
+                             alt="Item5">
+                      } @else {
+                        <div class="data-item-slot">
+                          ▢
+                        </div>
+                      }
+                    </div>
+                  </td>
                 </tr>
               }
             </tbody>
@@ -101,6 +163,7 @@
               <th>Vision Score</th>
               <th>CS</th>
               <th>Gold</th>
+              <th>Items</th>
             </tr>
             </thead>
             <tbody>
@@ -127,6 +190,67 @@
                   </td>
                   <td class="data-gold">
                     {{ enemy.goldEarned }}
+                  </td>
+                  <td>
+                    <div class="data-items">
+
+                      @if (enemy.item0 != null) {
+                        <img class="data-item-slot" src="data:image/png;base64,{{enemy.item0}}"
+                             alt="Item0">
+                      } @else {
+                        <div class="data-item-slot">
+                          ▢
+                        </div>
+                      }
+                      @if (enemy.item1 != null) {
+                        <img class="data-item-slot" src="data:image/png;base64,{{enemy.item1}}"
+                             alt="Item1">
+                      } @else {
+                        <div class="data-item-slot">
+                          ▢
+                        </div>
+                      }
+                      @if (enemy.item2 != null) {
+                        <img class="data-item-slot" src="data:image/png;base64,{{enemy.item2}}"
+                             alt="Item2">
+                      } @else {
+                        <div class="data-item-slot">
+                          ▢
+                        </div>
+                      }
+                      @if (enemy.item6 != null) {
+                        <img class="data-item-slot" src="data:image/png;base64,{{enemy.item6}}"
+                             alt="Item6">
+                      } @else {
+                        <div class="data-item-slot">
+                          ▢
+                        </div>
+                      }
+                      @if (enemy.item3 != null) {
+                        <img class="data-item-slot" src="data:image/png;base64,{{enemy.item3}}"
+                             alt="Item3">
+                      } @else {
+                        <div class="data-item-slot">
+                          ▢
+                        </div>
+                      }
+                      @if (enemy.item4 != null) {
+                        <img class="data-item-slot" src="data:image/png;base64,{{enemy.item4}}"
+                             alt="Item4">
+                      } @else {
+                        <div class="data-item-slot">
+                          ▢
+                        </div>
+                      }
+                      @if (enemy.item5 != null) {
+                        <img class="data-item-slot" src="data:image/png;base64,{{enemy.item5}}"
+                             alt="Item5">
+                      } @else {
+                        <div class="data-item-slot">
+                          ▢
+                        </div>
+                      }
+                    </div>
                   </td>
                 </tr>
               }
