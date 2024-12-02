@@ -12,5 +12,4 @@ import java.io.Serializable;
 @NoArgsConstructor
 @AllArgsConstructor
 public abstract class BaseOrmBean implements Serializable {
-    private String id;
 }

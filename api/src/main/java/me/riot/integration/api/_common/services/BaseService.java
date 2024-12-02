@@ -1,10 +1,15 @@
 package me.riot.integration.api._common.services;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import jakarta.transaction.Transactional;
 import me.riot.integration.api._common.datamodel.BaseDTO;
+import me.riot.integration.api._common.datamodel.BaseOrmBean;
 import me.riot.integration.api._common.utils.HTTPMethod;
+import me.riot.integration.api.account.dto.AccountDTO;
+import me.riot.integration.api.account.rest.orm.AccountOrmBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Component;
 
 import java.io.BufferedReader;
@@ -14,10 +19,11 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URI;
 import java.net.URL;
+import java.time.Instant;
 
 
 @Component
-public class BaseService<DTO extends BaseDTO> {
+public abstract class BaseService<Orm extends BaseOrmBean, DTO extends BaseDTO> {
     private static final String API_KEY = "X-Riot-Token";
     protected static final String _BASE_END_POINT = "riot/";
     @Value("${api.integration.url}")
@@ -31,6 +37,8 @@ public class BaseService<DTO extends BaseDTO> {
 
     @Autowired
     protected ObjectMapper _objectMapper;
+
+    protected abstract JpaRepository getRepository();
 
 
     protected String sendRequest(String address, HTTPMethod method) {
@@ -93,4 +101,13 @@ public class BaseService<DTO extends BaseDTO> {
             }
         }
     }
+
+    @Transactional
+    protected void save(DTO dto) {
+        Orm orm = this.build(dto);
+        this.getRepository().save(orm);
+    }
+
+    protected abstract Orm build(DTO dto);
+
 }
