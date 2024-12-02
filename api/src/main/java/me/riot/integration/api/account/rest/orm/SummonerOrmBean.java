@@ -8,6 +8,7 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.Setter;
+import me.riot.integration.api._common.datamodel.BaseOrmBean;
 
 import java.time.Instant;
 
@@ -15,7 +16,7 @@ import java.time.Instant;
 @Setter
 @Entity
 @Table(name = "summoner", schema = "riot_integration")
-public class SummonerOrmBean {
+public class SummonerOrmBean extends BaseOrmBean {
     @Id
     @Size(max = 100)
     @Column(name = "id", nullable = false, length = 100)

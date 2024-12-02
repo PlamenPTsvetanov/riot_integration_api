@@ -7,6 +7,6 @@ import org.springframework.stereotype.Repository;
 import java.util.UUID;
 
 @Repository
-public interface IAccountRepository extends JpaRepository<AccountOrmBean, UUID> {
+public interface IAccountRepository extends JpaRepository<AccountOrmBean, String> {
     AccountOrmBean getByGameNameAndTagLine(String accountName, String tagLine);
 }

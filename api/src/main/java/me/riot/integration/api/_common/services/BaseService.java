@@ -7,6 +7,7 @@ import me.riot.integration.api._common.datamodel.BaseOrmBean;
 import me.riot.integration.api._common.utils.HTTPMethod;
 import me.riot.integration.api.account.dto.AccountDTO;
 import me.riot.integration.api.account.rest.orm.AccountOrmBean;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -35,6 +36,8 @@ public abstract class BaseService<Orm extends BaseOrmBean, DTO extends BaseDTO> 
     @Value("${api.datadragon}")
     protected String _dataDragonUrl;
 
+    protected Instant _fetchLimit = Instant.now().minusSeconds(300);
+    protected final ModelMapper _mapper = new ModelMapper();
     @Autowired
     protected ObjectMapper _objectMapper;
 

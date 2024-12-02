@@ -22,11 +22,9 @@ public class AccountService extends BaseService<AccountOrmBean, AccountDTO> {
     private static final String CLASS_END_POINT = "account/v1/";
     private static final String BY_RIOT_ID_EP = "accounts/by-riot-id/";
     private final IAccountRepository repository;
-    private final ModelMapper mapper;
 
-    public AccountService(IAccountRepository repository, ModelMapper mapper) {
+    public AccountService(IAccountRepository repository) {
         this.repository = repository;
-        this.mapper = mapper;
     }
 
     /**
@@ -40,10 +38,9 @@ public class AccountService extends BaseService<AccountOrmBean, AccountDTO> {
         try {
             AccountOrmBean orm = this.find(inRestBean.getGameName(), inRestBean.getTagLine());
             // Using some limit in order to reduce queries to api and reflect them towards local database
-            Instant limit = Instant.now().minusSeconds(300);
-            if (orm != null && orm.getLastCheckedDate().isBefore(limit)) {
-                log.info("Found user in database and last check date is in order.");
-                return mapper.map(orm, AccountDTO.class);
+            if (orm != null && orm.getLastCheckedDate().isBefore(_fetchLimit)) {
+                log.info("Found account in database and last check date is in order.");
+                return _mapper.map(orm, AccountDTO.class);
             } else {
                 log.warn("Fetching new data.");
                 String modifiedRequest = _apiUrl +

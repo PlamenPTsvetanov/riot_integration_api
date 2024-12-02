@@ -6,5 +6,7 @@ import org.springframework.stereotype.Repository;
 import java.util.UUID;
 
 @Repository
-public interface IconRepository extends JpaRepository<IconOrmBean, UUID> {
+public interface IIconRepository extends JpaRepository<IconOrmBean, UUID> {
+
+    IconOrmBean getByRiotIdAndType(Integer riotId, String type);
 }

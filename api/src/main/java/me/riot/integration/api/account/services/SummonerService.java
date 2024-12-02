@@ -1,80 +1,109 @@
 package me.riot.integration.api.account.services;
 
 import com.fasterxml.jackson.core.type.TypeReference;
+import lombok.extern.slf4j.Slf4j;
 import me.riot.integration.api._common.services.BaseService;
 import me.riot.integration.api._common.utils.HTTPMethod;
 import me.riot.integration.api.account.dto.SummonerDTO;
 import me.riot.integration.api.account.dto.SummonerRankedInfoDTO;
+import me.riot.integration.api.account.repositories.ISummonerRankedInfoRepository;
+import me.riot.integration.api.account.repositories.ISummonerRepository;
+import me.riot.integration.api.account.rest.orm.SummonerOrmBean;
+import me.riot.integration.api.account.rest.orm.SummonerRankedInfoOrmBean;
 import org.springframework.stereotype.Service;
 
-import java.math.BigInteger;
-import java.util.List;
+import java.time.Instant;
 
+@Slf4j
 @Service
-public class SummonerService extends BaseService<SummonerDTO> {
+public class SummonerService extends BaseService<SummonerOrmBean, SummonerDTO> {
 
     private static final String SUMMONER_V_4 = "summoner/v4/";
     private static final String LEAGUE_V_4 = "league/v4/";
     private static final String SUMMONERS_BY_PUUID = "summoners/by-puuid/";
     private static final String ENTRIES = "entries/by-summoner/";
 
-    private static final String ICON_END_POINT = "img/profileicon/";
-    private static final String ICON_EXTENSION = ".png";
+    private final ISummonerRepository repository;
+    private final ISummonerRankedInfoRepository rankedInfoRepository;
+
+    public SummonerService(ISummonerRepository repository, ISummonerRankedInfoRepository rankedInforepository) {
+        this.repository = repository;
+        this.rankedInfoRepository = rankedInforepository;
+    }
 
     public SummonerDTO getSummonerInfo(String accountPuuid) {
         SummonerDTO response;
         try {
-            StringBuilder modifiedRequest =
-                    new StringBuilder(_apiUrlEun1)
-                            .append(SUMMONER_V_4)
-                            .append(SUMMONERS_BY_PUUID)
-                            .append(accountPuuid);
+            SummonerOrmBean summoner = this.repository.getByPuuid(accountPuuid);
 
+            if (summoner != null
+                    && summoner.getLastCheckDate().isAfter(_fetchLimit)) {
+                log.info("Found summoner in database and last check date is in order.");
+                return _mapper.map(summoner, SummonerDTO.class);
+            } else {
+                log.warn("Fetching new data.");
+                String modifiedRequest = _apiUrlEun1 +
+                        SUMMONER_V_4 +
+                        SUMMONERS_BY_PUUID +
+                        accountPuuid;
 
-            String retrievedFromApi = super.sendRequest(modifiedRequest.toString(), HTTPMethod.GET);
-            response = _objectMapper.readValue(retrievedFromApi, SummonerDTO.class);
+                String retrievedFromApi = super.sendRequest(modifiedRequest, HTTPMethod.GET);
+                response = _objectMapper.readValue(retrievedFromApi, SummonerDTO.class);
+                this.save(response);
+            }
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
         return response;
     }
 
-
-    public byte[] getSummonerIcon(BigInteger iconId) {
-        byte[] icon;
+    public SummonerRankedInfoDTO getSummonerRankedInformation(String summonerId) {
+        SummonerRankedInfoDTO dto;
         try {
-            StringBuilder modifiedRequest =
-                    new StringBuilder(_dataDragonUrl)
-                            .append(ICON_END_POINT)
-                            .append(iconId)
-                            .append(ICON_EXTENSION);
+            SummonerRankedInfoOrmBean rankedInfo = this.rankedInfoRepository.getBySummoner_Id(summonerId);
 
+            if (rankedInfo != null && rankedInfo.getLastCheckDate().isAfter(_fetchLimit)) {
+                log.info("Found rankedInfo in database.");
+                return _mapper.map(rankedInfo, SummonerRankedInfoDTO.class);
+            } else {
+                log.warn("Fetching new data.");
+                String modifiedRequest = _apiUrlEun1 +
+                        LEAGUE_V_4 +
+                        ENTRIES +
+                        summonerId;
 
-            icon = super.sendRequestBytes(modifiedRequest.toString(), HTTPMethod.GET);
+                String content = super.sendRequest(modifiedRequest, HTTPMethod.GET);
+                dto = _objectMapper.readValue(content, new TypeReference<>() {
+                });
+
+                SummonerRankedInfoOrmBean orm = new SummonerRankedInfoOrmBean();
+                orm.setSummonerId(summonerId);
+                orm.setLosses(orm.getLosses());
+                orm.setWins(orm.getWins());
+                orm.setTier(orm.getTier());
+                orm.setLeaguePoints(orm.getLeaguePoints());
+                orm.setLastCheckDate(Instant.now());
+                this.rankedInfoRepository.save(orm);
+
+                return dto;
+            }
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
-
-        return icon;
     }
 
+    @Override
+    protected ISummonerRepository getRepository() {
+        return this.repository;
+    }
 
-    public List<SummonerRankedInfoDTO> getSummonerRankedInformation(String summonerId) {
-        List<SummonerRankedInfoDTO> dto = null;
-        try {
-            StringBuilder modifiedRequest =
-                    new StringBuilder(_apiUrlEun1)
-                            .append(LEAGUE_V_4)
-                            .append(ENTRIES)
-                            .append(summonerId);
-
-
-            String content = super.sendRequest(modifiedRequest.toString(), HTTPMethod.GET);
-            dto = _objectMapper.readValue(content, new TypeReference<List<SummonerRankedInfoDTO>>() {
-            });
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-        return dto;
+    @Override
+    protected SummonerOrmBean build(SummonerDTO dto) {
+        SummonerOrmBean orm = new SummonerOrmBean();
+        orm.setId(dto.getId());
+        orm.setPuuid(dto.getPuuid());
+        orm.setLastCheckDate(Instant.now());
+        orm.setAccountId(dto.getAccountId());
+        return orm;
     }
 }
