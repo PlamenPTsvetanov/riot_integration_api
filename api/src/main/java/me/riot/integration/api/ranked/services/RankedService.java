@@ -290,6 +290,9 @@ public class RankedService extends BaseService {
 
     @Transactional
     private byte[] getChampionImageBytes(String championName) {
+        if (championName.equals("FiddleSticks")) { // Riot...
+            championName = championName.substring(0, 1) + championName.substring(1).toLowerCase();
+        }
         IconOrmBean icon = iconRepo.getByChampionNameAndType(championName, IconType.CHAMPION.toString());
         if (icon == null) {
             String imageRequest = _dataDragonUrl +
