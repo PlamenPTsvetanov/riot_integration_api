@@ -314,12 +314,28 @@ public class RankedService extends BaseService {
     }
 
     private byte[] getItemImageBytes(Integer itemId) {
-        String imageRequest = _dataDragonUrl +
-                "img/" +
-                "item/" +
-                itemId +
-                ".png";
-        return super.sendRequestBytes(imageRequest, HTTPMethod.GET);
+        IconOrmBean icon = iconRepo.getByRiotIdAndType(itemId, IconType.ITEM.toString());
+
+        if (icon == null) {
+
+            String imageRequest = _dataDragonUrl +
+                    "img/" +
+                    "item/" +
+                    itemId +
+                    ".png";
+            byte[] bytes = super.sendRequestBytes(imageRequest, HTTPMethod.GET);
+
+            IconOrmBean orm = new IconOrmBean();
+            orm.setId(UUID.randomUUID().toString());
+            orm.setImage(bytes);
+            orm.setRiotId(itemId);
+            orm.setChampionName(null);
+            orm.setType(IconType.ITEM.toString());
+            this.iconRepo.save(orm);
+
+            return bytes;
+        }
+        return icon.getImage();
     }
 
     private int getPositionPriority(String teamPosition) {
