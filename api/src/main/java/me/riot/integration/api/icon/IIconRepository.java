@@ -9,4 +9,5 @@ import java.util.UUID;
 public interface IIconRepository extends JpaRepository<IconOrmBean, UUID> {
 
     IconOrmBean getByRiotIdAndType(Integer riotId, String type);
+    IconOrmBean getByChampionNameAndType(String championName, String type);
 }

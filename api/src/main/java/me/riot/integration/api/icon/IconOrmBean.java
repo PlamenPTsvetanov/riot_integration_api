@@ -20,9 +20,11 @@ public class IconOrmBean extends BaseOrmBean {
     @Column(name = "id", nullable = false, length = 36)
     private String id;
 
-    @NotNull
-    @Column(name = "riot_id", nullable = false)
+    @Column(name = "riot_id")
     private Integer riotId;
+
+    @Column(name = "champion_name")
+    private String championName;
 
     @NotNull
     @Column(name = "type", nullable = false)

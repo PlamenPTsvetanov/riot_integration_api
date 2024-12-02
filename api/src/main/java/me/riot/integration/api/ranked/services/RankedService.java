@@ -2,15 +2,22 @@ package me.riot.integration.api.ranked.services;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
+import jakarta.transaction.Transactional;
+import lombok.extern.slf4j.Slf4j;
 import me.riot.integration.api._common.datamodel.BaseDTO;
 import me.riot.integration.api._common.datamodel.BaseOrmBean;
 import me.riot.integration.api._common.datamodel.MatchHolderDTO;
 import me.riot.integration.api._common.services.BaseService;
 import me.riot.integration.api._common.utils.HTTPMethod;
+import me.riot.integration.api.icon.IIconRepository;
+import me.riot.integration.api.icon.IconOrmBean;
+import me.riot.integration.api.icon.IconType;
 import me.riot.integration.api.ranked.dto.full.MatchHistoryBean;
 import me.riot.integration.api.ranked.dto.full.ParticipantDTO;
 import me.riot.integration.api.ranked.dto.simple.matchEndData.ParticipantBean;
 import me.riot.integration.api.ranked.dto.simple.matchEndData.SimpleMatchInfoHolder;
+import me.riot.integration.api.ranked.repositories.IMatchRepository;
+import me.riot.integration.api.ranked.rest.orm.MatchOrmBean;
 import me.riot.integration.api.ranked.rest.out.InfoOutRestBean;
 import me.riot.integration.api.ranked.rest.out.MatchHistoryOutRestBean;
 import me.riot.integration.api.ranked.rest.out.ParticipantOutRestBean;
@@ -22,6 +29,7 @@ import org.springframework.stereotype.Service;
 import java.util.*;
 import java.util.stream.Collectors;
 
+@Slf4j
 @Service
 public class RankedService extends BaseService {
     private static final String CLASS_END_POINT = "lol/match/v5/";
@@ -29,20 +37,31 @@ public class RankedService extends BaseService {
     private static final String BY_MATCH_ID = "matches";
     private final ModelMapper modelMapper;
 
-    public RankedService(ModelMapper modelMapper) {
+    private final IMatchRepository matchRepo;
+    private final IIconRepository iconRepo;
+
+    public RankedService(ModelMapper modelMapper, IMatchRepository matchRepo, IIconRepository iconRepo) {
         this.modelMapper = modelMapper;
+        this.matchRepo = matchRepo;
+        this.iconRepo = iconRepo;
     }
 
+    /**
+     * Retrieving information obout player's performance on
+     * his last played champs (in the last 10 played games).
+     *
+     * @param puuid
+     * @return
+     */
     //Rp5NE2Jlwx9v8udkxFL1H52_bY20ULWlY1YfOxg7M2l5z6D8mS5I2YD5POTiGuMcMXurkNvyE_7rCw
     public List<PlayerChampionStats> getChampionsWithWins(String puuid) {
         // Champion id -> list of stats
         List<PlayerChampionStats> champStats = new ArrayList<>();
         try {
-            List<String> lastMatches = this.getLast10MatchIds(puuid);
+            List<String> matchIds = this.getLast10MatchIds(puuid);
 
             Map<Long, Set<ParticipantBean>> endData = new HashMap<>();
-
-            getEndDataForPlayerFromMatches(puuid, lastMatches, endData);
+            getEndDataForPlayerFromMatches(puuid, matchIds, endData);
 
             for (Set<ParticipantBean> data : endData.values()) {
                 champStats.add(getPlayerChampionStats(data));
@@ -164,16 +183,13 @@ public class RankedService extends BaseService {
     private List<String> getLast10MatchIds(String puuid) {
         List<String> response;
         try {
-            StringBuilder modifiedRequest =
-                    new StringBuilder(_apiUrl)
-                            .append(CLASS_END_POINT)
-                            .append(BY_PUUID)
-                            .append(puuid)
-                            .append("/ids")
-                            .append("?start=0&count=10");
-
-
-            String retrievedFromApi = super.sendRequest(modifiedRequest.toString(), HTTPMethod.GET);
+            String modifiedRequest = _apiUrl +
+                    CLASS_END_POINT +
+                    BY_PUUID +
+                    puuid +
+                    "/ids" +
+                    "?start=0&count=10";
+            String retrievedFromApi = super.sendRequest(modifiedRequest, HTTPMethod.GET);
             response = _objectMapper.readValue(retrievedFromApi, new TypeReference<>() {
             });
         } catch (Exception e) {
@@ -207,16 +223,32 @@ public class RankedService extends BaseService {
         }
     }
 
-    private <T extends MatchHolderDTO> T getEndMatchData(String match, Class<T> clazz) throws JsonProcessingException {
-        String modifiedRequest = _apiUrl +
-                CLASS_END_POINT +
-                BY_MATCH_ID +
-                "/" +
-                match;
-        String retrievedFromApi = super.sendRequest(modifiedRequest, HTTPMethod.GET);
-        return _objectMapper.readValue(retrievedFromApi, clazz);
+    @Transactional
+    private <T extends MatchHolderDTO> T getEndMatchData(String matchId, Class<T> clazz) throws JsonProcessingException {
+        // Getting from database or api
+        Optional<MatchOrmBean> potential = this.matchRepo.findById(matchId);
+        if (potential.isEmpty()) {
+            log.warn("Fetching new data.");
+            String modifiedRequest = _apiUrl +
+                    CLASS_END_POINT +
+                    BY_MATCH_ID +
+                    "/" +
+                    matchId;
+            String retrievedFromApi = super.sendRequest(modifiedRequest, HTTPMethod.GET);
+
+            MatchOrmBean orm = new MatchOrmBean();
+            orm.setId(matchId);
+            orm.setData(retrievedFromApi);
+            this.matchRepo.save(orm);
+            return _objectMapper.readValue(retrievedFromApi, clazz);
+        } else {
+            log.info("Game end data found in database.");
+        }
+        return _objectMapper.readValue(potential.get().getData(), clazz);
+
     }
 
+    @Transactional
     private PlayerChampionStats getPlayerChampionStats(Set<ParticipantBean> data) {
         int gamesPlayed = data.size();
         double winCounter = 0.0;
@@ -256,13 +288,29 @@ public class RankedService extends BaseService {
         return stats;
     }
 
+    @Transactional
     private byte[] getChampionImageBytes(String championName) {
-        String imageRequest = _dataDragonUrl +
-                "img/" +
-                "champion/" +
-                championName +
-                ".png";
-        return super.sendRequestBytes(imageRequest, HTTPMethod.GET);
+        IconOrmBean icon = iconRepo.getByChampionNameAndType(championName, IconType.CHAMPION.toString());
+        if (icon == null) {
+            String imageRequest = _dataDragonUrl +
+                    "img/" +
+                    "champion/" +
+                    championName +
+                    ".png";
+            byte[] bytes = super.sendRequestBytes(imageRequest, HTTPMethod.GET);
+
+            IconOrmBean orm = new IconOrmBean();
+            orm.setId(UUID.randomUUID().toString());
+            orm.setImage(bytes);
+            orm.setRiotId(null);
+            orm.setChampionName(championName);
+            orm.setType(IconType.CHAMPION.toString());
+
+            this.iconRepo.save(orm);
+
+            return bytes;
+        }
+        return icon.getImage();
     }
 
     private byte[] getItemImageBytes(Integer itemId) {
