@@ -27,6 +27,11 @@ public class SummonerRankedInfoOrmBean extends BaseOrmBean {
     @Column(name = "tier", nullable = false, length = 20)
     private String tier;
 
+    @Size(max = 5)
+    @NotNull
+    @Column(name = "rank", nullable = false, length = 5)
+    private String rank;
+
     @NotNull
     @Column(name = "league_points", nullable = false)
     private Integer leaguePoints;

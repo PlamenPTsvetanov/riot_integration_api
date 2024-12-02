@@ -85,8 +85,9 @@ public class SummonerService extends BaseService<SummonerOrmBean, SummonerDTO> {
                 orm.setWins(dto.getWins());
                 orm.setTier(dto.getTier());
                 orm.setLeaguePoints(dto.getLeaguePoints());
+                orm.setRank(dto.getRank());
                 orm.setLastCheckDate(Instant.now());
-                orm.setId(UUID.randomUUID().toString());
+                orm.setId(rankedInfo == null ? UUID.randomUUID().toString() : rankedInfo.getId());
 
                 this.rankedInfoRepository.save(orm);
 
