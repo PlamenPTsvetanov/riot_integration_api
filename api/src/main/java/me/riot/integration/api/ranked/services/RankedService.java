@@ -2,33 +2,34 @@ package me.riot.integration.api.ranked.services;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
+import me.riot.integration.api._common.datamodel.BaseDTO;
+import me.riot.integration.api._common.datamodel.BaseOrmBean;
 import me.riot.integration.api._common.datamodel.MatchHolderDTO;
 import me.riot.integration.api._common.services.BaseService;
 import me.riot.integration.api._common.utils.HTTPMethod;
-import me.riot.integration.api.account.dto.AccountDTO;
 import me.riot.integration.api.ranked.dto.full.MatchHistoryBean;
 import me.riot.integration.api.ranked.dto.full.ParticipantDTO;
 import me.riot.integration.api.ranked.dto.simple.matchEndData.ParticipantBean;
 import me.riot.integration.api.ranked.dto.simple.matchEndData.SimpleMatchInfoHolder;
-import me.riot.integration.api.ranked.rest.InfoOutRestBean;
-import me.riot.integration.api.ranked.rest.MatchHistoryOutRestBean;
-import me.riot.integration.api.ranked.rest.ParticipantOutRestBean;
-import me.riot.integration.api.ranked.rest.PlayerChampionStats;
+import me.riot.integration.api.ranked.rest.out.InfoOutRestBean;
+import me.riot.integration.api.ranked.rest.out.MatchHistoryOutRestBean;
+import me.riot.integration.api.ranked.rest.out.ParticipantOutRestBean;
+import me.riot.integration.api.ranked.rest.out.PlayerChampionStats;
 import org.modelmapper.ModelMapper;
+import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
-public class RankedService extends BaseService<AccountDTO> {
+public class RankedService extends BaseService {
     private static final String CLASS_END_POINT = "lol/match/v5/";
     private static final String BY_PUUID = "matches/by-puuid/";
     private static final String BY_MATCH_ID = "matches";
     private final ModelMapper modelMapper;
 
     public RankedService(ModelMapper modelMapper) {
-        super();
         this.modelMapper = modelMapper;
     }
 
@@ -284,5 +285,14 @@ public class RankedService extends BaseService<AccountDTO> {
         };
     }
 
+    @Override
+    protected JpaRepository getRepository() {
+        return null;
+    }
+
+    @Override
+    protected BaseOrmBean build(BaseDTO dto) {
+        return null;
+    }
 }
 

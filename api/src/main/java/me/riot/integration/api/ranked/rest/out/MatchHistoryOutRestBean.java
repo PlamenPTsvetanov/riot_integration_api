@@ -1,4 +1,4 @@
-package me.riot.integration.api.ranked.rest;
+package me.riot.integration.api.ranked.rest.out;
 
 import lombok.Getter;
 import lombok.Setter;

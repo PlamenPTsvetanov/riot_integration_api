@@ -18,20 +18,14 @@ public class SummonerRankedInfoOrmBean extends BaseOrmBean {
     @Size(max = 36)
     @Column(name = "id", nullable = false, length = 36)
     private String id;
-    @Size(max = 36)
-    @Column(name = "summoner_id", nullable = false, length = 36)
+    @Size(max = 100)
+    @Column(name = "summoner_id", nullable = false, length = 100)
     private String summonerId;
-
 
     @Size(max = 20)
     @NotNull
     @Column(name = "tier", nullable = false, length = 20)
     private String tier;
-
-    @NotNull
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "summoner_id", nullable = false, insertable = false, updatable = false)
-    private SummonerOrmBean summoner;
 
     @NotNull
     @Column(name = "league_points", nullable = false)

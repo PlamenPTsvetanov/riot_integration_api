@@ -33,6 +33,10 @@ public class SummonerOrmBean extends BaseOrmBean {
     private String accountId;
 
     @NotNull
+    @Column(name = "profile_icon_id", nullable = false)
+    private Integer profileIconId;
+
+    @NotNull
     @Column(name = "last_check_date", nullable = false)
     private Instant lastCheckDate;
 

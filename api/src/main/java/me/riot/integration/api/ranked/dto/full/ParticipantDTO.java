@@ -12,7 +12,6 @@ public class ParticipantDTO {
     private int champLevel;
     private int championId;
     private String championName;
-//    private ChallengesDTO challenges;
     private int doubleKills;
     private int goldEarned;
     private int item0;

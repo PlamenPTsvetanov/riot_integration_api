@@ -29,6 +29,7 @@ export class SummonerComponent implements OnInit {
         iconSub = this.summonerService.getIconBytes().subscribe({
           next: (blob) => {
             const objectURL = URL.createObjectURL(blob);
+            console.log(objectURL);
             this.image = this.sanitizer.bypassSecurityTrustUrl(objectURL);
           }
         });

@@ -2,15 +2,15 @@
   <div class="container">
     <img [src]="imagePath" alt="Rank" class="image">
     <div class="text-container">
-      <p>{{srService.summonerRankedInfo()![0].tier}}</p>
-      <p>{{srService.summonerRankedInfo()![0].rank}}</p>
+      <p>{{srService.summonerRankedInfo()!.tier}}</p>
+      <p>{{srService.summonerRankedInfo()!.rank}}</p>
     </div>
     <div class="text-league-points">
-      {{srService.summonerRankedInfo()![0].leaguePoints}} LP
+      {{srService.summonerRankedInfo()!.leaguePoints}} LP
     </div>
     <div class="text-wins-losses">
-      {{srService.summonerRankedInfo()![0].wins}} W -
-      {{srService.summonerRankedInfo()![0].losses}} L ({{srService.summonerRankedInfo()![0].winrate}}%)
+      {{srService.summonerRankedInfo()!.wins}} W -
+      {{srService.summonerRankedInfo()!.losses}} L ({{srService.summonerRankedInfo()!.winrate}}%)
     </div>
   </div>
 }

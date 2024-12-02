@@ -6,5 +6,5 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface ISummonerRankedInfoRepository extends JpaRepository<SummonerRankedInfoOrmBean, String> {
-    SummonerRankedInfoOrmBean getBySummoner_Id(String id);
+    SummonerRankedInfoOrmBean getBySummonerId(String id);
 }

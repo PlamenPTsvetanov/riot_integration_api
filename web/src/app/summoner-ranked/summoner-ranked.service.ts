@@ -9,19 +9,19 @@ import {SummonerRanked} from './summoner-ranked';
 })
 export class SummonerRankedService {
   private apiServerUrl = environment.apiServerUrl;
-  _summonerRankedInfo = signal<SummonerRanked[] | null>(null)
+  _summonerRankedInfo = signal<SummonerRanked | null>(null)
 
   http = inject(HttpClient);
 
-  public getSummonerRankedInfo(summonerId: string): Observable<SummonerRanked[]> {
+  public getSummonerRankedInfo(summonerId: string): Observable<SummonerRanked> {
     const params = new HttpParams()
       .set('summonerId', summonerId)
 
-    return this.http.get<SummonerRanked[]>(`${this.apiServerUrl}/summoners/rankedInfo`, {params});
+    return this.http.get<SummonerRanked>(`${this.apiServerUrl}/summoners/rankedInfo`, {params});
   }
 
 
-  get summonerRankedInfo(): WritableSignal<SummonerRanked[] | null> {
+  get summonerRankedInfo(): WritableSignal<SummonerRanked | null> {
     return this._summonerRankedInfo;
   }
 }

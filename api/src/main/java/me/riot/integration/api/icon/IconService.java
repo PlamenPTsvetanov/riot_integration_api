@@ -10,6 +10,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Service;
 
 import java.math.BigInteger;
+import java.util.UUID;
 
 @Slf4j
 @Service
@@ -42,8 +43,10 @@ public class IconService extends BaseService {
 
                 IconOrmBean orm = new IconOrmBean();
                 orm.setImage(icon);
+                orm.setId(UUID.randomUUID().toString());
                 orm.setType(IconType.SUMMONER.toString());
                 orm.setRiotId(iconId.intValue());
+
                 this.repository.save(orm);
             }
         } catch (Exception e) {

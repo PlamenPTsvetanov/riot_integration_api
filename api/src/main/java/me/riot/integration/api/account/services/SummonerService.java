@@ -13,6 +13,8 @@ import me.riot.integration.api.account.rest.orm.SummonerRankedInfoOrmBean;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
+import java.util.List;
+import java.util.UUID;
 
 @Slf4j
 @Service
@@ -60,7 +62,7 @@ public class SummonerService extends BaseService<SummonerOrmBean, SummonerDTO> {
     public SummonerRankedInfoDTO getSummonerRankedInformation(String summonerId) {
         SummonerRankedInfoDTO dto;
         try {
-            SummonerRankedInfoOrmBean rankedInfo = this.rankedInfoRepository.getBySummoner_Id(summonerId);
+            SummonerRankedInfoOrmBean rankedInfo = this.rankedInfoRepository.getBySummonerId(summonerId);
 
             if (rankedInfo != null && rankedInfo.getLastCheckDate().isAfter(_fetchLimit)) {
                 log.info("Found rankedInfo in database.");
@@ -73,16 +75,19 @@ public class SummonerService extends BaseService<SummonerOrmBean, SummonerDTO> {
                         summonerId;
 
                 String content = super.sendRequest(modifiedRequest, HTTPMethod.GET);
-                dto = _objectMapper.readValue(content, new TypeReference<>() {
+                List<SummonerRankedInfoDTO> dtos = _objectMapper.readValue(content, new TypeReference<>() {
                 });
-
+                dto = dtos.get(0);
                 SummonerRankedInfoOrmBean orm = new SummonerRankedInfoOrmBean();
+
                 orm.setSummonerId(summonerId);
-                orm.setLosses(orm.getLosses());
-                orm.setWins(orm.getWins());
-                orm.setTier(orm.getTier());
-                orm.setLeaguePoints(orm.getLeaguePoints());
+                orm.setLosses(dto.getLosses());
+                orm.setWins(dto.getWins());
+                orm.setTier(dto.getTier());
+                orm.setLeaguePoints(dto.getLeaguePoints());
                 orm.setLastCheckDate(Instant.now());
+                orm.setId(UUID.randomUUID().toString());
+
                 this.rankedInfoRepository.save(orm);
 
                 return dto;
@@ -104,6 +109,7 @@ public class SummonerService extends BaseService<SummonerOrmBean, SummonerDTO> {
         orm.setPuuid(dto.getPuuid());
         orm.setLastCheckDate(Instant.now());
         orm.setAccountId(dto.getAccountId());
+        orm.setProfileIconId(dto.getProfileIconId().intValue());
         return orm;
     }
 }

@@ -20,11 +20,11 @@ export class SummonerRankedComponent implements OnInit {
       info => {
         this.srService._summonerRankedInfo.set(info);
 
-        const sr = this.srService._summonerRankedInfo()![0];
-
+        const sr = this.srService._summonerRankedInfo()!;
+        console.log(sr);
         const totalGames = sr.wins + sr.losses;
         sr.winrate = ((sr.wins / totalGames) * 100).toFixed(0);
-        const path = this.srService._summonerRankedInfo()![0].tier;
+        const path = sr.tier;
 
         this.imagePath = "../../assets/ranked_icons/Rank="
           + path.charAt(0).toUpperCase() + path.slice(1).toLowerCase() + ".png";

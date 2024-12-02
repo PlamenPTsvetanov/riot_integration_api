@@ -10,8 +10,5 @@ import java.io.Serializable;
 
 @Getter
 @Setter
-@NoArgsConstructor
-@AllArgsConstructor
-@MappedSuperclass
 public abstract class BaseOrmBean implements Serializable {
 }
